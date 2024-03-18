@@ -1,0 +1,82 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import Navigation from "./components/Navigation";
+import Dashboard from "./pages/Dashboard";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Login from "./pages/Login";
+import DataProduk from "./pages/DataProduk";
+import Error404 from "./pages/Error404";
+import Kategori from "./pages/Kategori";
+import PenyesuaianStok from "./pages/PenyesuaianStok";
+import LaporanPenjualan from "./pages/LaporanPenjualan";
+import LaporanTransaksi from "./pages/LaporanTransaksi";
+import Pelanggan from "./pages/Pelanggan";
+import PengaturanAkun from "./pages/PengaturanAkun";
+import PengaturanNota from "./pages/PengaturanNota";
+import ProtectedRoutes from "./utils/ProtectedRoutes";
+
+function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/login",
+      element: <Login />,
+    },
+    {
+      element: (
+        <>
+          <ProtectedRoutes />
+        </>
+      ),
+      children: [
+        {
+          element: <Navigation />,
+          children: [
+            {
+              path: "/",
+              element: <Dashboard />,
+            },
+            {
+              path: "/produk/data-produk",
+              element: <DataProduk />,
+            },
+            {
+              path: "/produk/kategori",
+              element: <Kategori />,
+            },
+            {
+              path: "/produk/penyesuaian-stok",
+              element: <PenyesuaianStok />,
+            },
+            {
+              path: "/laporan/penjualan",
+              element: <LaporanPenjualan />,
+            },
+            {
+              path: "/laporan/transaksi",
+              element: <LaporanTransaksi />,
+            },
+            {
+              path: "/pelanggan",
+              element: <Pelanggan />,
+            },
+            {
+              path: "/pengaturan/akun",
+              element: <PengaturanAkun />,
+            },
+            {
+              path: "/pengaturan/nota",
+              element: <PengaturanNota />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: "*",
+      element: <Error404 />,
+    },
+  ]);
+  return <RouterProvider router={router} />;
+}
+
+export default App;
