@@ -30,6 +30,7 @@ function LaporanTransaksi() {
   const navigate = useNavigate();
   const [dataTransaksi, setDataTransaksi] = useState([]);
   const [dataTotal, setDataTotal] = useState({});
+  const [jenisTransaksi, setJenisTransaksi] = useState("Jenis Transaksi");
 
   const [state, setState] = useState([
     {
@@ -169,24 +170,30 @@ function LaporanTransaksi() {
               className="px-4 border w-100 btn-dropdown"
             >
               <Receipt />
-              &nbsp; Jenis Transaksi
+              &nbsp; {jenisTransaksi}
             </Dropdown.Toggle>
 
             <Dropdown.Menu className="w-100">
               <Dropdown.Item
                 href="#/Umum"
-                onClick={() =>
-                  getDataLaporan(state[0].startDate, state[0].endDate, "umum")
-                }
+                onClick={() => {
+                  getDataLaporan(state[0].startDate, state[0].endDate, "umum");
+                  setJenisTransaksi("Umum");
+                }}
               >
                 Umum
               </Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item
                 href="#/MA Grup"
-                onClick={() =>
-                  getDataLaporan(state[0].startDate, state[0].endDate, "magrup")
-                }
+                onClick={() => {
+                  getDataLaporan(
+                    state[0].startDate,
+                    state[0].endDate,
+                    "magrup"
+                  );
+                  setJenisTransaksi("MA Grup");
+                }}
               >
                 MA Grup
               </Dropdown.Item>
