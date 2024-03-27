@@ -26,8 +26,31 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function LaporanTransaksi() {
+  const [showDetail, setShowDetail] = useState(false);
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+  const [dataDetail, setDataDetail] = useState({
+    bayar: "",
+    id_pelanggan: "",
+    jenis_transaksi: "",
+    kembalian: "",
+    metode_pembayaran: "",
+    nama_pelanggan: "",
+    no_nota: "",
+    status: "",
+    tanggal: "",
+    total: "",
+    transaksi_detail: [
+      {
+        id_varian: "",
+        nama_produk: "",
+        nama_varian: "",
+        qty: "",
+        subtotal: "",
+      },
+    ],
+  });
+
   const [dataTransaksi, setDataTransaksi] = useState([]);
   const [dataTotal, setDataTotal] = useState({});
   const [jenisTransaksi, setJenisTransaksi] = useState("Jenis Transaksi");
@@ -85,11 +108,25 @@ function LaporanTransaksi() {
         localStorage.clear();
         return navigate("/login");
       } else {
-        console.log(response.data.data);
-        console.log(response.data.data_total);
         setDataTransaksi(response.data.data);
         setDataTotal(response.data.data_total);
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleClickRow = async (id) => {
+    try {
+      const idTransaksi = id;
+      const URL = API + "laporan/transaksi/" + idTransaksi;
+      const response = await axios.get(URL, {
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      setShowDetail(true);
+      setDataDetail(response.data.data);
     } catch (error) {
       console.log(error);
     }
@@ -209,61 +246,154 @@ function LaporanTransaksi() {
           </InputGroup>
         </Col>
       </Row>
-      <Card>
-        <Card.Body>
-          <Row>
-            <Col className="text-center">
-              <h5 className="fw-bold">{dataTotal.jumlah_transaksi}</h5>
-              <div className="text-secondary mt-2">TRANSAKSI</div>
-            </Col>
-            <Col className="text-center">
-              <h5 className="fw-bold">
-                <FormatRupiah value={dataTotal.total_transaksi} />
-              </h5>
-              <div className="text-secondary mt-2">TOTAL</div>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-      <Table responsive>
-        {dataTransaksi.map((item, i) => (
-          <React.Fragment key={i}>
-            <thead>
-              <tr>
-                <th className="bg-lightgrey" colSpan={3}>
-                  {moment
-                    .tz(item.tanggal, "Asia/Jakarta")
-                    .format("dddd, Do MMMM YYYY")}
-                </th>
-                <th className="text-end bg-lightgrey" colSpan={2}>
-                  <FormatRupiah value={item.total} />
-                </th>
-              </tr>
-            </thead>
-            {item.transaksi.map((detail, index) => (
-              <tbody key={index}>
-                <tr>
-                  <td className="text-grey">#{detail.no_nota}</td>
-                  <td className="text-grey">{detail.waktu}</td>
-                  <td className="text-grey text-uppercase">
-                    {detail.metode_pembayaran}
+      <Row>
+        <Col md={showDetail ? 8 : 12}>
+          <Card>
+            <Card.Body>
+              <Row>
+                <Col className="text-center">
+                  <h5 className="fw-bold">{dataTotal.jumlah_transaksi}</h5>
+                  <div className="text-secondary mt-2">TRANSAKSI</div>
+                </Col>
+                <Col className="text-center">
+                  <h5 className="fw-bold">
+                    <FormatRupiah value={dataTotal.total_transaksi} />
+                  </h5>
+                  <div className="text-secondary mt-2">TOTAL</div>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+          <Table responsive>
+            {dataTransaksi.map((item, i) => (
+              <React.Fragment key={i}>
+                <thead>
+                  <tr>
+                    <th className="bg-lightgrey" colSpan={3}>
+                      {moment
+                        .tz(item.tanggal, "Asia/Jakarta")
+                        .format("dddd, Do MMMM YYYY")}
+                    </th>
+                    <th className="text-end bg-lightgrey" colSpan={2}>
+                      <FormatRupiah value={item.total} />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {item.transaksi.map((detail, index) => (
+                    <tr key={index} onClick={() => handleClickRow(detail.id)}>
+                      <td className="text-grey">#{detail.no_nota}</td>
+                      <td className="text-grey">{detail.waktu}</td>
+                      <td className="text-grey text-uppercase">
+                        {detail.metode_pembayaran}
+                      </td>
+                      <td className="text-grey text-uppercase">
+                        {detail.status == "lunas" ? (
+                          <Badge bg="success">{detail.status}</Badge>
+                        ) : (
+                          <Badge bg="danger">{detail.status}</Badge>
+                        )}
+                      </td>
+                      <td className="text-end text-grey">
+                        <FormatRupiah value={detail.total} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </React.Fragment>
+            ))}
+          </Table>
+        </Col>
+        <Col md={4} className={showDetail ? "d-block" : "d-none"}>
+          <div
+            className="text-center overflow-y-scroll"
+            style={{ height: "500px" }}
+          >
+            <img
+              src="../logo.png"
+              className="rounded-circle"
+              alt="..."
+              width="128px"
+            />
+            <br />
+            <h5 className="fw-semibold mt-0">UD MURTI AJI</h5>
+            <p>
+              Jl. Karang Kencana No.51, Panjunan, Kota Cirebon, Jawa Barat 45112{" "}
+              <br />
+              <i className="bi-telephone"></i> +62 85311579001
+            </p>
+            <hr style={{ margin: 0 }} />
+            <table className="table table-sm table-borderless text-start">
+              <tbody>
+                <tr style={{ fontSize: "12px" }}>
+                  <td className="text-secondary">
+                    {moment(dataDetail.tanggal).tz("Asia/Jakarta").format("ll")}
                   </td>
-                  <td className="text-grey text-uppercase">
-                    {detail.status == "lunas" ? (
-                      <Badge bg="success">{detail.status}</Badge>
-                    ) : (
-                      <Badge bg="danger">{detail.status}</Badge>
-                    )}
+                  <td className="text-end text-secondary">
+                    {moment(dataDetail.tanggal).tz("Asia/Jakarta").format("LT")}
                   </td>
-                  <td className="text-end text-grey">
-                    <FormatRupiah value={detail.total} />
+                </tr>
+                <tr style={{ fontSize: "12px" }}>
+                  <td className="text-secondary">No Nota</td>
+                  <td className="text-end text-secondary">
+                    {dataDetail.no_nota}
+                  </td>
+                </tr>
+                <tr style={{ fontSize: "12px" }}>
+                  <td className="text-secondary">Pelanggan</td>
+                  <td className="text-end text-secondary">
+                    {dataDetail.nama_pelanggan || "-"}
                   </td>
                 </tr>
               </tbody>
-            ))}
-          </React.Fragment>
-        ))}
-      </Table>
+            </table>
+            <hr style={{ margin: 0 }} />
+            <table className="table table-sm table-borderless text-start">
+              <tbody>
+                {dataDetail.transaksi_detail.map((item, index) => (
+                  <tr key={index}>
+                    <td>
+                      {item.nama_produk} <br />
+                      <i className="text-secondary">{item.nama_varian}</i>
+                    </td>
+                    <td>x{item.qty}</td>
+                    <td className="text-end">
+                      <FormatRupiah value={item.subtotal} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <hr style={{ margin: 0 }} />
+            <div className="d-flex justify-content-between mb-2">
+              <b className="fs-5">Total</b>
+              <b className="fs-5">
+                <FormatRupiah value={dataDetail.total} />
+              </b>
+            </div>
+            <div className="d-flex justify-content-between mb-2">
+              <span>
+                {dataDetail.metode_pembayaran.toString().toUpperCase()}
+              </span>
+              <span>
+                <FormatRupiah value={dataDetail.bayar} />
+              </span>
+            </div>
+            <div className="d-flex justify-content-between mb-2">
+              <span>Kembalian</span>
+              <span>{dataDetail.kembalian}</span>
+            </div>
+            <hr style={{ margin: 0 }} />
+          </div>
+          <Button
+            variant="default"
+            className="border mt-2"
+            onClick={() => setShowDetail(false)}
+          >
+            Tutup
+          </Button>
+        </Col>
+      </Row>
     </Container>
   );
 }
