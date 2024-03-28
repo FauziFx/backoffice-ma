@@ -1,7 +1,8 @@
 import React from "react";
 import { Table } from "react-bootstrap";
+import { FormatRupiah } from "@arismun/format-rupiah";
 
-function LaporanRingkas() {
+function LaporanRingkas({ data }) {
   return (
     <>
       <Table>
@@ -17,23 +18,30 @@ function LaporanRingkas() {
         <tbody>
           <tr>
             <td className="border-0 text-grey">Penjualan</td>
-            <td className="text-end border-0 text-grey">Rp 100.000.000</td>
+            <td className="text-end border-0 text-grey">
+              <FormatRupiah value={data.totalPenjualan} />
+            </td>
           </tr>
           <tr>
             <td className="border-0 text-grey">MA Grup</td>
-            <td className="text-end border-0 text-grey">(Rp 50.000.000)</td>
+            <td className="text-end border-0 text-grey">
+              (
+              <FormatRupiah value={data.totalMaGrup} />)
+            </td>
           </tr>
           <tr>
             <td className="border-bottom border-black text-grey">Refund</td>
             <td className="border-bottom border-black text-end text-grey">
-              - Rp 1.000.000
+              <FormatRupiah value={data.totalRefund} />
             </td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
             <th className="fw-bold border-0">Total</th>
-            <th className="fw-bold border-0 text-end">Rp 49.000.000</th>
+            <th className="fw-bold border-0 text-end">
+              <FormatRupiah value={data.total} />
+            </th>
           </tr>
         </tfoot>
       </Table>

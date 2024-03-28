@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Card,
@@ -16,8 +16,20 @@ import LaporanJenisPenjualan from "../components/LaporanJenisPenjualan";
 import LaporanKategoriPenjualan from "../components/LaporanKategoriPenjualan";
 import LaporanPenjualanBarang from "../components/LaporanPenjualanBarang";
 import LaporanMaGrup from "../components/LaporanMaGrup";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import moment from "moment-timezone";
+import "moment/dist/locale/id";
 
 function LaporanPenjualan() {
+  const API = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
+  const [laporanRingkas, setLaporanRingkas] = useState({
+    totalPenjualan: 0,
+    totalMaGrup: 0,
+    totalRefund: 0,
+    total: 0,
+  });
   const [btnList, setButtonList] = useState([
     {
       id: 1,
@@ -45,7 +57,16 @@ function LaporanPenjualan() {
 
   const handleClick = (event) => {
     event.preventDefault();
-    setActive(event.target.id);
+    const id = event.target.id;
+    setActive(id);
+    switch (id) {
+      case 1:
+        getLaporanRingkas(state[0].startDate, state[0].endDate);
+        break;
+
+      case 5:
+        break;
+    }
   };
 
   const [state, setState] = useState([
@@ -67,6 +88,10 @@ function LaporanPenjualan() {
         key: "selection",
       },
     ]);
+
+    if (active == 1) {
+      getLaporanRingkas(startDate, endDate);
+    }
   };
 
   const decreaseDate = () => {
@@ -80,7 +105,39 @@ function LaporanPenjualan() {
         key: "selection",
       },
     ]);
+
+    if (active == 1) {
+      getLaporanRingkas(startDate, endDate);
+    }
   };
+
+  const getLaporanRingkas = async (startDate, endDate) => {
+    try {
+      moment.locale("id");
+      const URL = API + "laporan/ringkasan";
+      const response = await axios.get(URL, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        setLaporanRingkas(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getLaporanRingkas();
+  }, []);
 
   return (
     <Container className="pt-4">
@@ -119,7 +176,6 @@ function LaporanPenjualan() {
               <DateRangePicker
                 onChange={(item) => {
                   setState([item.selection]);
-                  console.log(item);
                 }}
                 showSelectionPreview={true}
                 moveRangeOnFirstSelection={false}
@@ -127,7 +183,12 @@ function LaporanPenjualan() {
                 direction="horizontal"
               />
               <Row className="px-4">
-                <Dropdown.Item className="bg-primary w-100 text-light text-center">
+                <Dropdown.Item
+                  className="bg-primary w-100 text-light text-center"
+                  onClick={() =>
+                    getLaporanRingkas(state[0].startDate, state[0].endDate)
+                  }
+                >
                   Tampilkan
                 </Dropdown.Item>
               </Row>
@@ -155,7 +216,7 @@ function LaporanPenjualan() {
         </Col>
         <Col sm={12} md={9}>
           <Container className={active == 1 ? "d-block" : "d-none"}>
-            <LaporanRingkas />
+            <LaporanRingkas data={laporanRingkas} />
           </Container>
           <Container className={active == 2 ? "d-block" : "d-none"}>
             <LaporanJenisPenjualan />
