@@ -24,12 +24,10 @@ import "moment/dist/locale/id";
 function LaporanPenjualan() {
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
-  const [laporanRingkas, setLaporanRingkas] = useState({
-    totalPenjualan: 0,
-    totalMaGrup: 0,
-    totalRefund: 0,
-    total: 0,
-  });
+  const [laporanRingkas, setLaporanRingkas] = useState({});
+  const [laporanMaGrup, setLaporanMaGrup] = useState([]);
+  const [laporanMaGrupTotalItem, setLaporanMaGrupTotalItem] = useState(0);
+  const [laporanMaGrupTotal, setLaporanMaGrupTotal] = useState(0);
   const [btnList, setButtonList] = useState([
     {
       id: 1,
@@ -59,13 +57,10 @@ function LaporanPenjualan() {
     event.preventDefault();
     const id = event.target.id;
     setActive(id);
-    switch (id) {
-      case 1:
-        getLaporanRingkas(state[0].startDate, state[0].endDate);
-        break;
-
-      case 5:
-        break;
+    if (id == 1) {
+      getLaporanRingkas(state[0].startDate, state[0].endDate);
+    } else if (id == 5) {
+      getLaporanMaGrup(state[0].startDate, state[0].endDate);
     }
   };
 
@@ -90,7 +85,9 @@ function LaporanPenjualan() {
     ]);
 
     if (active == 1) {
-      getLaporanRingkas(startDate, endDate);
+      getLaporanRingkas(state[0].startDate, state[0].endDate);
+    } else if (active == 5) {
+      getLaporanMaGrup(state[0].startDate, state[0].endDate);
     }
   };
 
@@ -107,7 +104,9 @@ function LaporanPenjualan() {
     ]);
 
     if (active == 1) {
-      getLaporanRingkas(startDate, endDate);
+      getLaporanRingkas(state[0].startDate, state[0].endDate);
+    } else if (active == 5) {
+      getLaporanMaGrup(state[0].startDate, state[0].endDate);
     }
   };
 
@@ -129,6 +128,47 @@ function LaporanPenjualan() {
         return navigate("/login");
       } else {
         setLaporanRingkas(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFilterTanggal = () => {
+    if (active == 1) {
+      getLaporanRingkas(state[0].startDate, state[0].endDate);
+    } else if (active == 5) {
+      getLaporanMaGrup(state[0].startDate, state[0].endDate);
+    }
+  };
+
+  const getLaporanMaGrup = async (startDate, endDate) => {
+    try {
+      moment.locale("id");
+      const URL = API + "laporan/magrup";
+      const response = await axios.get(URL, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        console.log(response.data);
+        let totalItem = response.data.data.reduce(function (prev, current) {
+          return prev + +current.item_terjual;
+        }, 0);
+        let total = response.data.data.reduce(function (prev, current) {
+          return prev + +current.total;
+        }, 0);
+        setLaporanMaGrup(response.data.data);
+        setLaporanMaGrupTotalItem(totalItem);
+        setLaporanMaGrupTotal(total);
       }
     } catch (error) {
       console.log(error);
@@ -185,9 +225,7 @@ function LaporanPenjualan() {
               <Row className="px-4">
                 <Dropdown.Item
                   className="bg-primary w-100 text-light text-center"
-                  onClick={() =>
-                    getLaporanRingkas(state[0].startDate, state[0].endDate)
-                  }
+                  onClick={() => handleFilterTanggal()}
                 >
                   Tampilkan
                 </Dropdown.Item>
@@ -228,7 +266,11 @@ function LaporanPenjualan() {
             <LaporanPenjualanBarang />
           </Container>
           <Container className={active == 5 ? "d-block" : "d-none"}>
-            <LaporanMaGrup />
+            <LaporanMaGrup
+              data={laporanMaGrup}
+              totalItem={laporanMaGrupTotalItem}
+              total={laporanMaGrupTotal}
+            />
           </Container>
         </Col>
       </Row>

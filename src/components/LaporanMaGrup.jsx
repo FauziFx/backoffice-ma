@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Table, Button } from "react-bootstrap";
+import { FormatRupiah } from "@arismun/format-rupiah";
 
-function LaporanMaGrup() {
+function LaporanMaGrup({ data, totalItem, total }) {
   return (
     <>
       <Table responsive>
@@ -13,39 +14,23 @@ function LaporanMaGrup() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td className="border-0 text-grey">Ma Grup 1</td>
-            <td className="border-0 text-grey">23</td>
-            <td className="text-end border-0 text-grey">Rp 50.000.000</td>
-          </tr>
-          <tr>
-            <td className="border-0 text-grey">Ma Grup 1</td>
-            <td className="border-0 text-grey">23</td>
-            <td className="text-end border-0 text-grey">Rp 50.000.000</td>
-          </tr>
-          <tr>
-            <td className="border-0 text-grey">Ma Grup 1</td>
-            <td className="border-0 text-grey">23</td>
-            <td className="text-end border-0 text-grey">Rp 50.000.000</td>
-          </tr>
-          <tr>
-            <td className="border-0 text-grey">Ma Grup 1</td>
-            <td className="border-0 text-grey">23</td>
-            <td className="text-end border-0 text-grey">Rp 50.000.000</td>
-          </tr>
-          <tr>
-            <td className="border-bottom border-black text-grey">Ma Grup 2 </td>
-            <td className="border-bottom border-black text-grey">12</td>
-            <td className="border-bottom border-black text-end text-grey">
-              Rp 50.000.000
-            </td>
-          </tr>
+          {data.map((item, index) => (
+            <tr key={index}>
+              <td className="border-0 text-grey">{item.nama_pelanggan}</td>
+              <td className="border-0 text-grey">{item.item_terjual}</td>
+              <td className="text-end border-0 text-grey">
+                <FormatRupiah value={item.total} />
+              </td>
+            </tr>
+          ))}
         </tbody>
-        <tfoot>
+        <tfoot className="border-top">
           <tr>
             <th>Total</th>
-            <th>634</th>
-            <th className="text-end pe-4">Rp 150.000.000</th>
+            <th>{totalItem}</th>
+            <th className="text-end pe-2">
+              <FormatRupiah value={total} />
+            </th>
           </tr>
         </tfoot>
       </Table>
