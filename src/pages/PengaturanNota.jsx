@@ -10,7 +10,7 @@ function PengaturanNota() {
         </Col>
       </Row>
       <Row>
-        <Col>Lorem, ipsum dolor. </Col>
+        <Col>Coming Soon, UNDER CONSTRUCTION!</Col>
       </Row>
     </Container>
   );
