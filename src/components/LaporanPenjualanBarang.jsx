@@ -4,7 +4,10 @@ import { Table } from "react-bootstrap";
 function LaporanPenjualanBarang() {
   return (
     <>
-      <Table responsive>
+      <h2 className="bg-danger p-2 text-white">
+        Coming Soon! UNDER CONSTRUCTION
+      </h2>
+      {/* <Table responsive>
         <thead>
           <tr>
             <th className="bg-lightgrey fw-bold">Nama</th>
@@ -184,7 +187,7 @@ function LaporanPenjualanBarang() {
             <th className="text-end pe-4">Rp 150.000.000</th>
           </tr>
         </tfoot>
-      </Table>
+      </Table> */}
     </>
   );
 }
