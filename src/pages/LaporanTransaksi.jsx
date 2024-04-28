@@ -147,7 +147,7 @@ function LaporanTransaksi() {
         </Col>
       </Row>
       <Row className="mb-2">
-        <Col md={3} className="mt-1">
+        <Col md={4} className="mt-1">
           <Dropdown className="date-filter btn-group">
             <Button variant="secondary" onClick={() => decreaseDate()}>
               <ChevronLeft />
@@ -237,13 +237,13 @@ function LaporanTransaksi() {
             </Dropdown.Menu>
           </Dropdown>
         </Col>
-        <Col md={6} className="mt-1">
-          <InputGroup>
+        <Col md={5} className="mt-1">
+          {/* <InputGroup>
             <Form.Control type="text" id="search-data" placeholder="Cari..." />
             <InputGroup.Text id="basic-addon2">
               <Search />
             </InputGroup.Text>
-          </InputGroup>
+          </InputGroup> */}
         </Col>
       </Row>
       <Row>
