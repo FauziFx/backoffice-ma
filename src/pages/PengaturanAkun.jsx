@@ -236,7 +236,7 @@ function PengaturanAkun() {
         <Col md={6} className={showTambah ? "d-block" : "d-none"}>
           <TambahAkun
             closeButton={handleShowTambah}
-            // getDataPelanggan={getDataPelanggan}
+            getDataAkun={getDataAkun}
           />
         </Col>
         <Col md={6} className={showDetail ? "d-block" : "d-none"}>
