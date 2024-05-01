@@ -18,7 +18,7 @@ function TambahProduk({ closeButton, dataKategori, getDataProduk }) {
     id_kategori: "",
   });
   const [varianInputs, setVarianInputs] = useState([
-    { nama_varian: "", stok: 0, stok_minimum: 0, harga: "", track_stok: "y" },
+    {nama: dataProduk.nama_produk.split("(")[0] || "", nama_varian: "", stok: 0, stok_minimum: 0, harga: "", track_stok: "y" },
   ]);
   const [loadingTambahProduk, setLoadingTambahProduk] = useState(false);
 
@@ -38,7 +38,7 @@ function TambahProduk({ closeButton, dataKategori, getDataProduk }) {
   const handleAddInput = () => {
     setVarianInputs([
       ...varianInputs,
-      { nama_varian: "", stok: 0, stok_minimum: 0, harga: "", track_stok: "y" },
+      {nama: dataProduk.nama_produk.split("(")[0] || "", nama_varian: "", stok: 0, stok_minimum: 0, harga: "", track_stok: "y" },
     ]);
   };
 
@@ -111,6 +111,7 @@ function TambahProduk({ closeButton, dataKategori, getDataProduk }) {
         });
         setVarianInputs([
           {
+            nama: dataProduk.nama_produk.split("(")[0] || "",
             nama_varian: "",
             stok: 0,
             stok_minimum: 0,

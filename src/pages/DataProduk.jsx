@@ -321,6 +321,7 @@ function DataProduk() {
       if (varianBaru[0].nama_varian_baru != "") {
         varianBaru.map((item, i) => {
           const partialObj = {};
+          partialObj.nama=produkDetail.nama_produk.split("(")[0]
           partialObj.nama_varian = item.nama_varian_baru;
           partialObj.stok = item.stok_baru;
           partialObj.stok_minimum = item.stok_minimum_baru;
