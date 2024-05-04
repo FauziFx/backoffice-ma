@@ -3,6 +3,7 @@ import { Form, Container, Row, Col, Card, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 
 function Login() {
   const API = import.meta.env.VITE_API_URL;
@@ -31,16 +32,22 @@ function Login() {
       });
       if (response.data.success) {
         const token = response.data.token;
-        localStorage.clear();
-        localStorage.setItem("user-token", token);
-        const cookies = new Cookies();
-        cookies.set("backoffice-ma-token", token, {
-          maxAge: 2628000,
-        });
+        const decode = jwtDecode(token).user;
+        if (decode.role == "admin") {
+          localStorage.clear();
+          localStorage.setItem("user-token", token);
+          const cookies = new Cookies();
+          cookies.set("backoffice-ma-token", token, {
+            maxAge: 2628000,
+          });
 
-        setTimeout(() => {
-          window.location.replace("/");
-        }, 500);
+          setTimeout(() => {
+            window.location.replace("/");
+          }, 500);
+        } else {
+          setMsg("Kamu tidak diizinkan mengakses halaman ini!");
+          setIsDisabled(false);
+        }
       } else {
         setMsg(response.data.message);
         setIsDisabled(false);
