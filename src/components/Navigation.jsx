@@ -3,7 +3,7 @@ import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, Outlet } from "react-router-dom";
 import Cookies from "universal-cookie";
 
-function Navigation() {
+function Navigation({ dataUser }) {
   return (
     <>
       <Navbar
@@ -54,7 +54,7 @@ function Navigation() {
             </Nav>
 
             <Nav className="ms-auto">
-              <NavDropdown title="Username" id="basic-nav-dropdown">
+              <NavDropdown title={dataUser.nama} id="basic-nav-dropdown">
                 <Link to="" className="dropdown-item">
                   Pengaturan
                 </Link>

@@ -14,8 +14,22 @@ import Pelanggan from "./pages/Pelanggan";
 import PengaturanAkun from "./pages/PengaturanAkun";
 import PengaturanNota from "./pages/PengaturanNota";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
+import { useEffect, useState } from "react";
+import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 
 function App() {
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    const cookies = new Cookies();
+    const userToken = cookies.get("backoffice-ma-token");
+    if (userToken) {
+      const decode = jwtDecode(userToken).user;
+      setUser(decode);
+    }
+  });
+
   const router = createBrowserRouter([
     {
       path: "/login",
@@ -29,7 +43,7 @@ function App() {
       ),
       children: [
         {
-          element: <Navigation />,
+          element: <Navigation dataUser={user} />,
           children: [
             {
               path: "/",
