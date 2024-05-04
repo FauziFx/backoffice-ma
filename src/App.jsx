@@ -28,7 +28,7 @@ function App() {
       const decode = jwtDecode(userToken).user;
       setUser(decode);
     }
-  });
+  }, []);
 
   const router = createBrowserRouter([
     {
