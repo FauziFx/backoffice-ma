@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Container, Row, Col, Card, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Cookies from "universal-cookie";
 
 function Login() {
   const API = import.meta.env.VITE_API_URL;
@@ -32,6 +33,10 @@ function Login() {
         const token = response.data.token;
         localStorage.clear();
         localStorage.setItem("user-token", token);
+        const cookies = new Cookies();
+        cookies.set("backoffice-ma-token", token, {
+          maxAge: 2628000,
+        });
 
         setTimeout(() => {
           window.location.replace("/");
@@ -47,7 +52,9 @@ function Login() {
   };
 
   useEffect(() => {
-    const userToken = localStorage.getItem("user-token");
+    // const userToken = localStorage.getItem("user-token");
+    const cookies = new Cookies();
+    const userToken = cookies.get("backoffice-ma-token");
     if (userToken) {
       return navigate("/");
     }

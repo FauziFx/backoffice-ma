@@ -1,6 +1,7 @@
 import { Dropdown } from "bootstrap";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, Outlet } from "react-router-dom";
+import Cookies from "universal-cookie";
 
 function Navigation() {
   return (
@@ -61,6 +62,8 @@ function Navigation() {
                   className="dropdown-item"
                   onClick={() => {
                     localStorage.clear();
+                    const cookies = new Cookies();
+                    cookies.remove("backoffice-ma-token");
                     window.location.replace("/");
                   }}
                 >
