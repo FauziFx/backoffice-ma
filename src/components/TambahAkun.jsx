@@ -8,15 +8,18 @@ function TambahAkun({ closeButton, getDataAkun }) {
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigation();
   const [dataUser, setDataUser] = useState({
-    nama:"",
-    username:"",
-    password:"",
-    role:"",
+    nama: "",
+    username: "",
+    password: "",
+    role: "user",
   });
 
   const handleChange = (e) => {
-    setDataUser({
-      [e.target.name]: e.target.value,
+    setDataUser((prev) => {
+      return {
+        ...prev,
+        [e.target.name]: e.target.value,
+      };
     });
   };
 
@@ -27,10 +30,10 @@ function TambahAkun({ closeButton, getDataAkun }) {
       const response = await axios.post(
         URL,
         {
-          nama:dataUser.nama,
-          username:dataUser.username,
-          password:dataUser.password,
-          role:dataUser.role,
+          nama: dataUser.nama,
+          username: dataUser.username,
+          password: dataUser.password,
+          role: dataUser.role,
         },
         {
           headers: {
@@ -46,10 +49,10 @@ function TambahAkun({ closeButton, getDataAkun }) {
         closeButton();
         getDataAkun();
         setDataUser({
-          nama:"",
-          username:"",
-          password:"",
-          role:"",
+          nama: "",
+          username: "",
+          password: "",
+          role: "user",
         });
         Toast.fire({
           icon: "success",
@@ -77,7 +80,7 @@ function TambahAkun({ closeButton, getDataAkun }) {
     <Container>
       <small className="mb-0">Tambah Akun</small>
       <hr style={{ margin: 0 }} />
-      <Form className="mt-2" onSubmit={handleSubmit}>
+      <Form className="mt-2" onSubmit={handleSubmit} autoComplete="off">
         <Form.Group as={Row} className="mb-2">
           <Form.Label column sm={3}>
             Nama <i className="text-danger">*</i>
@@ -88,6 +91,9 @@ function TambahAkun({ closeButton, getDataAkun }) {
               required
               name="nama"
               placeholder="Nama"
+              value={dataUser.nama}
+              onChange={(e) => handleChange(e)}
+              autoComplete="off"
             />
           </Col>
         </Form.Group>
@@ -101,6 +107,9 @@ function TambahAkun({ closeButton, getDataAkun }) {
               required
               name="username"
               placeholder="Username"
+              value={dataUser.username}
+              onChange={(e) => handleChange(e)}
+              autoComplete="off"
             />
           </Col>
         </Form.Group>
@@ -110,10 +119,13 @@ function TambahAkun({ closeButton, getDataAkun }) {
           </Form.Label>
           <Col sm={9}>
             <Form.Control
-              type="text"
+              type="password"
               required
               name="password"
               placeholder="Password"
+              value={dataUser.password}
+              onChange={(e) => handleChange(e)}
+              autoComplete="off"
             />
           </Col>
         </Form.Group>
@@ -122,10 +134,17 @@ function TambahAkun({ closeButton, getDataAkun }) {
             Role <i className="text-danger">*</i>
           </Form.Label>
           <Col sm={9}>
-          <Form.Select aria-label="Default select example" name="role">
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </Form.Select>
+            <Form.Select
+              aria-label="Default select example"
+              name="role"
+              value={dataUser.role}
+              onChange={(e) => handleChange(e)}
+              autoComplete="off"
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+              <option value="kasir">Kasir</option>
+            </Form.Select>
           </Col>
         </Form.Group>
         <Button type="submit" className="float-end mt-2">

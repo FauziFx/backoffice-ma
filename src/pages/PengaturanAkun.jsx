@@ -12,7 +12,6 @@ import { Search, Trash3Fill } from "react-bootstrap-icons";
 import TambahAkun from "../components/TambahAkun";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import moment from "moment-timezone";
 import "moment/dist/locale/id";
 import Swal from "sweetalert2";
 
@@ -46,6 +45,15 @@ function PengaturanAkun() {
     const search = e.target.value;
     setSearchInput(search);
     getDataAkun(search);
+  };
+
+  const handleChange = (e) => {
+    setAkunDetail((prev) => {
+      return {
+        ...prev,
+        [e.target.name]: e.target.value,
+      };
+    });
   };
 
   const handleClickHapus = async (id_user) => {
@@ -94,6 +102,7 @@ function PengaturanAkun() {
         id: detail.id,
         nama: detail.nama,
         username: detail.username,
+        password: "",
         role: detail.role,
       });
     } catch (error) {
@@ -133,7 +142,7 @@ function PengaturanAkun() {
         URL,
         {
           nama: akunDetail.nama,
-          username: akunDetail.nohp,
+          username: akunDetail.username,
           password: akunDetail.password,
           role: akunDetail.role,
         },
@@ -185,7 +194,7 @@ function PengaturanAkun() {
     <Container className="pt-4">
       <Row>
         <Col>
-          <h3>Daftar Pelanggan</h3>
+          <h3>Daftar Akun</h3>
         </Col>
         <Col className=" d-none d-sm-none d-md-block">
           <Button onClick={() => handleShowTambah()} className="float-end">
@@ -240,46 +249,73 @@ function PengaturanAkun() {
           />
         </Col>
         <Col md={6} className={showDetail ? "d-block" : "d-none"}>
-          {/* <Container>
-            <small className="mb-0">Informasi</small>
+          <Container>
+            <small className="mb-0">Tambah Akun</small>
             <hr style={{ margin: 0 }} />
             <Form className="mt-2" onSubmit={handleSubmit} autoComplete="off">
               <Form.Group as={Row} className="mb-2">
                 <Form.Label column sm={3}>
-                  Nama Pelanggan <i className="text-danger">*</i>
+                  Nama <i className="text-danger">*</i>
                 </Form.Label>
                 <Col sm={9}>
                   <Form.Control
                     type="text"
-                    placeholder="Nama Pelanggan"
-                    value={pelangganDetail.nama_pelanggan}
-                    onChange={(e) =>
-                      setPelangganDetail((prevState) => ({
-                        ...prevState,
-                        nama_pelanggan: e.target.value,
-                      }))
-                    }
+                    required
+                    name="nama"
+                    placeholder="Nama"
+                    value={akunDetail.nama}
+                    onChange={(e) => handleChange(e)}
                     autoComplete="off"
                   />
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-2">
                 <Form.Label column sm={3}>
-                  No Hp
+                  Username <i className="text-danger">*</i>
                 </Form.Label>
                 <Col sm={9}>
                   <Form.Control
                     type="text"
-                    placeholder="No Hp"
-                    value={pelangganDetail.nohp}
-                    onChange={(e) =>
-                      setPelangganDetail((prevState) => ({
-                        ...prevState,
-                        nohp: e.target.value || "",
-                      }))
-                    }
+                    required
+                    name="username"
+                    placeholder="Username"
+                    value={akunDetail.username}
+                    onChange={(e) => handleChange(e)}
                     autoComplete="off"
                   />
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-2">
+                <Form.Label column sm={3}>
+                  password
+                </Form.Label>
+                <Col sm={9}>
+                  <Form.Control
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    value={akunDetail.password}
+                    onChange={(e) => handleChange(e)}
+                    autoComplete="off"
+                  />
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-2">
+                <Form.Label column sm={3}>
+                  Role <i className="text-danger">*</i>
+                </Form.Label>
+                <Col sm={9}>
+                  <Form.Select
+                    aria-label="Default select example"
+                    name="role"
+                    value={akunDetail.role}
+                    onChange={(e) => handleChange(e)}
+                    autoComplete="off"
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                    <option value="kasir">Kasir</option>
+                  </Form.Select>
                 </Col>
               </Form.Group>
               <div className="d-flex justify-content-between">
@@ -287,7 +323,7 @@ function PengaturanAkun() {
                   <Button
                     variant="danger"
                     className="my-2"
-                    onClick={() => handleClickHapus(pelangganDetail.id)}
+                    onClick={() => handleClickHapus(akunDetail.id)}
                   >
                     <Trash3Fill />
                   </Button>
@@ -306,7 +342,7 @@ function PengaturanAkun() {
                 </div>
               </div>
             </Form>
-          </Container> */}
+          </Container>
         </Col>
       </Row>
     </Container>
