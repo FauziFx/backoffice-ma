@@ -15,7 +15,7 @@ import axios from "axios";
 import "moment/dist/locale/id";
 import Swal from "sweetalert2";
 
-function PengaturanAkun() {
+function PengaturanAkun({ dataUser }) {
   const [showTambah, setShowTambah] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const API = import.meta.env.VITE_API_URL;
@@ -231,14 +231,18 @@ function PengaturanAkun() {
               </tr>
             </thead>
             <tbody>
-              {dataAkun.map((item, index) => (
-                <tr key={index} onClick={() => handleClickRow(item.id)}>
-                  <td>{index + 1}</td>
-                  <td>{item.nama}</td>
-                  <td>{item.username}</td>
-                  <td>{item.role}</td>
-                </tr>
-              ))}
+              {dataAkun
+                .filter(function (user) {
+                  return user.id != dataUser.id;
+                })
+                .map((item, index) => (
+                  <tr key={index} onClick={() => handleClickRow(item.id)}>
+                    <td>{index + 1}</td>
+                    <td>{item.nama}</td>
+                    <td>{item.username}</td>
+                    <td>{item.role}</td>
+                  </tr>
+                ))}
             </tbody>
           </Table>
         </Col>

@@ -75,7 +75,7 @@ function App() {
             },
             {
               path: "/pengaturan/akun",
-              element: <PengaturanAkun />,
+              element: <PengaturanAkun dataUser={user} />,
             },
             {
               path: "/pengaturan/nota",
