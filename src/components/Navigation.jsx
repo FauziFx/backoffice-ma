@@ -55,16 +55,18 @@ function Navigation({ dataUser }) {
 
             <Nav className="ms-auto">
               <NavDropdown title={dataUser.nama} id="basic-nav-dropdown">
-                <Link to="" className="dropdown-item">
-                  Pengaturan
+                <Link to={"/profil/" + dataUser.nama} className="dropdown-item">
+                  {dataUser.username}
                 </Link>
                 <Link
                   className="dropdown-item"
                   onClick={() => {
+                    const cookie = new Cookies();
+                    cookie.remove("backoffice-ma-token", { path: "/" });
                     localStorage.clear();
-                    const cookies = new Cookies();
-                    cookies.remove("backoffice-ma-token");
-                    window.location.replace("/");
+                    setTimeout(() => {
+                      window.location.replace("/");
+                    }, 500);
                   }}
                 >
                   Logout

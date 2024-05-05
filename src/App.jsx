@@ -13,6 +13,7 @@ import LaporanTransaksi from "./pages/LaporanTransaksi";
 import Pelanggan from "./pages/Pelanggan";
 import PengaturanAkun from "./pages/PengaturanAkun";
 import PengaturanNota from "./pages/PengaturanNota";
+import Profil from "./components/Profil";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
@@ -80,6 +81,10 @@ function App() {
             {
               path: "/pengaturan/nota",
               element: <PengaturanNota />,
+            },
+            {
+              path: "/profil/:nama",
+              element: <Profil dataUser={user} />,
             },
           ],
         },
