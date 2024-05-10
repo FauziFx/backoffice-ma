@@ -28,6 +28,7 @@ function App() {
     if (userToken) {
       const decode = jwtDecode(userToken).user;
       setUser(decode);
+      localStorage.setItem("backoffice-ma-token", userToken);
     }
   }, []);
 
