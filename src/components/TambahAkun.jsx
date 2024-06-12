@@ -4,7 +4,7 @@ import { useNavigation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-function TambahAkun({ closeButton, getDataAkun }) {
+function TambahAkun({ closeButton, getDataAkun, dataOptik }) {
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigation();
   const [dataUser, setDataUser] = useState({
@@ -12,6 +12,7 @@ function TambahAkun({ closeButton, getDataAkun }) {
     username: "",
     password: "",
     role: "user",
+    id_optik: "",
   });
 
   const handleChange = (e) => {
@@ -26,6 +27,13 @@ function TambahAkun({ closeButton, getDataAkun }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log({
+        nama: dataUser.nama,
+        username: dataUser.username,
+        password: dataUser.password,
+        role: dataUser.role,
+        id_optik: dataUser.id_optik,
+      });
       const URL = API + "user";
       const response = await axios.post(
         URL,
@@ -34,6 +42,7 @@ function TambahAkun({ closeButton, getDataAkun }) {
           username: dataUser.username,
           password: dataUser.password,
           role: dataUser.role,
+          id_optik: dataUser.id_optik,
         },
         {
           headers: {
@@ -53,6 +62,7 @@ function TambahAkun({ closeButton, getDataAkun }) {
           username: "",
           password: "",
           role: "user",
+          id_optik: "",
         });
         Toast.fire({
           icon: "success",
@@ -144,6 +154,29 @@ function TambahAkun({ closeButton, getDataAkun }) {
               <option value="user">User</option>
               <option value="admin">Admin</option>
               <option value="kasir">Kasir</option>
+            </Form.Select>
+          </Col>
+        </Form.Group>
+        <Form.Group as={Row} className="mb-2">
+          <Form.Label column sm={3}>
+            Nama Optik
+          </Form.Label>
+          <Col sm={9}>
+            <Form.Select
+              aria-label="Default select example"
+              name="id_optik"
+              value={dataUser.id_optik}
+              onChange={(e) => handleChange(e)}
+              autoComplete="off"
+            >
+              <option value="" disabled>
+                -- Nama Optik --
+              </option>
+              {dataOptik.map((item, index) => (
+                <option key={index} value={item.id}>
+                  {item.nama_optik}
+                </option>
+              ))}
             </Form.Select>
           </Col>
         </Form.Group>

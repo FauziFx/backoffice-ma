@@ -21,12 +21,14 @@ function PengaturanAkun({ dataUser }) {
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [dataAkun, setDataAkun] = useState([]);
+  const [dataOptik, setDataOptik] = useState([]);
   const [akunDetail, setAkunDetail] = useState({
     id: "",
     nama: "",
     username: "",
     password: "",
     role: "",
+    id_optik: "",
   });
   const [searchInput, setSearchInput] = useState("");
 
@@ -90,6 +92,9 @@ function PengaturanAkun({ dataUser }) {
       } else {
         setDataAkun(response.data.data);
       }
+
+      const optik = await axios.get(API + "optik");
+      setDataOptik(optik.data.data);
     } catch (error) {
       console.log(error);
     }
@@ -104,6 +109,7 @@ function PengaturanAkun({ dataUser }) {
         username: detail.username,
         password: "",
         role: detail.role,
+        id_optik: detail.id_optik,
       });
     } catch (error) {
       console.log(error);
@@ -145,6 +151,7 @@ function PengaturanAkun({ dataUser }) {
           username: akunDetail.username,
           password: akunDetail.password,
           role: akunDetail.role,
+          id_optik: akunDetail.id_optik,
         },
         {
           headers: {
@@ -164,6 +171,7 @@ function PengaturanAkun({ dataUser }) {
           username: "",
           password: "",
           role: "",
+          id_optik: "",
         });
         Toast.fire({
           icon: "success",
@@ -198,7 +206,7 @@ function PengaturanAkun({ dataUser }) {
         </Col>
         <Col className=" d-none d-sm-none d-md-block">
           <Button onClick={() => handleShowTambah()} className="float-end">
-            Tambah Pelanggan
+            Tambah Akun
           </Button>
         </Col>
       </Row>
@@ -228,6 +236,7 @@ function PengaturanAkun({ dataUser }) {
                 <th className="p-2 bg-light">Nama</th>
                 <th className="p-2 bg-light">Username</th>
                 <th className="p-2 bg-light">Role</th>
+                <th className="p-2 bg-light">Nama Optik</th>
               </tr>
             </thead>
             <tbody>
@@ -241,6 +250,7 @@ function PengaturanAkun({ dataUser }) {
                     <td>{item.nama}</td>
                     <td>{item.username}</td>
                     <td>{item.role}</td>
+                    <td>{item.nama_optik || "-"}</td>
                   </tr>
                 ))}
             </tbody>
@@ -250,11 +260,12 @@ function PengaturanAkun({ dataUser }) {
           <TambahAkun
             closeButton={handleShowTambah}
             getDataAkun={getDataAkun}
+            dataOptik={dataOptik}
           />
         </Col>
         <Col md={6} className={showDetail ? "d-block" : "d-none"}>
           <Container>
-            <small className="mb-0">Tambah Akun</small>
+            <small className="mb-0">Edit Akun</small>
             <hr style={{ margin: 0 }} />
             <Form className="mt-2" onSubmit={handleSubmit} autoComplete="off">
               <Form.Group as={Row} className="mb-2">
@@ -319,6 +330,29 @@ function PengaturanAkun({ dataUser }) {
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
                     <option value="kasir">Kasir</option>
+                  </Form.Select>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-2">
+                <Form.Label column sm={3}>
+                  Nama Optik
+                </Form.Label>
+                <Col sm={9}>
+                  <Form.Select
+                    aria-label="Default select example"
+                    name="id_optik"
+                    value={akunDetail.id_optik}
+                    onChange={(e) => handleChange(e)}
+                    autoComplete="off"
+                  >
+                    <option value="" disabled>
+                      -- Nama Optik --
+                    </option>
+                    {dataOptik.map((item, index) => (
+                      <option key={index} value={item.id}>
+                        {item.nama_optik}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Col>
               </Form.Group>
