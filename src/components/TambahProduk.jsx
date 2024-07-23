@@ -18,7 +18,14 @@ function TambahProduk({ closeButton, dataKategori, getDataProduk }) {
     id_kategori: "",
   });
   const [varianInputs, setVarianInputs] = useState([
-    {nama: dataProduk.nama_produk.split("(")[0] || "", nama_varian: "", stok: 0, stok_minimum: 0, harga: "", track_stok: "y" },
+    {
+      nama: dataProduk.nama_produk.split("(")[0] || "",
+      nama_varian: "",
+      stok: 0,
+      stok_minimum: 0,
+      harga: "",
+      track_stok: "y",
+    },
   ]);
   const [loadingTambahProduk, setLoadingTambahProduk] = useState(false);
 
@@ -38,7 +45,14 @@ function TambahProduk({ closeButton, dataKategori, getDataProduk }) {
   const handleAddInput = () => {
     setVarianInputs([
       ...varianInputs,
-      {nama: dataProduk.nama_produk.split("(")[0] || "", nama_varian: "", stok: 0, stok_minimum: 0, harga: "", track_stok: "y" },
+      {
+        nama: dataProduk.nama_produk.split("(")[0] || "",
+        nama_varian: "",
+        stok: 0,
+        stok_minimum: 0,
+        harga: "",
+        track_stok: "y",
+      },
     ]);
   };
 
@@ -222,6 +236,15 @@ function TambahProduk({ closeButton, dataKategori, getDataProduk }) {
                         onChange={(event) => handleChangeVarian(event, index)}
                         placeholder="Harga"
                         required
+                        onFocus={(e) =>
+                          e.target.addEventListener(
+                            "wheel",
+                            function (e) {
+                              e.preventDefault();
+                            },
+                            { passive: false }
+                          )
+                        }
                       />
                     </Col>
                     <Col sm={1} className="ps-0 pt-1">
@@ -271,6 +294,15 @@ function TambahProduk({ closeButton, dataKategori, getDataProduk }) {
                           value={item.stok}
                           onChange={(event) => handleChangeVarian(event, index)}
                           placeholder=""
+                          onFocus={(e) =>
+                            e.target.addEventListener(
+                              "wheel",
+                              function (e) {
+                                e.preventDefault();
+                              },
+                              { passive: false }
+                            )
+                          }
                         />
                       </Col>
                       <Col sm={2} className="px-0">
@@ -279,6 +311,15 @@ function TambahProduk({ closeButton, dataKategori, getDataProduk }) {
                           type="number"
                           value={item.stok_minimum}
                           onChange={(event) => handleChangeVarian(event, index)}
+                          onFocus={(e) =>
+                            e.target.addEventListener(
+                              "wheel",
+                              function (e) {
+                                e.preventDefault();
+                              },
+                              { passive: false }
+                            )
+                          }
                         />
                       </Col>
                       <Col sm={3} className="pt-2 ps-4">
