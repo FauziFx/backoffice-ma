@@ -127,16 +127,14 @@ function TambahPenyesuaian({ closeButton, getDataPenyesuaian }) {
 
   const handleChangeDetail = (event, index) => {
     let { value } = event.target;
-    if (!isNaN(+value)) {
-      let onChangeValue = [...dataProdukDetail.varian];
-      onChangeValue[index]["stok_aktual"] = value;
-      onChangeValue[index]["penyesuaian"] =
-        value - onChangeValue[index]["stok_tersedia"];
-      setDataProdukDetail((prevState) => ({
-        ...prevState,
-        varian: onChangeValue,
-      }));
-    }
+    let onChangeValue = [...dataProdukDetail.varian];
+    onChangeValue[index]["stok_aktual"] = value;
+    onChangeValue[index]["penyesuaian"] =
+      value - onChangeValue[index]["stok_tersedia"];
+    setDataProdukDetail((prevState) => ({
+      ...prevState,
+      varian: onChangeValue,
+    }));
   };
 
   const handleAddItem = (e) => {
@@ -165,22 +163,20 @@ function TambahPenyesuaian({ closeButton, getDataPenyesuaian }) {
 
   const handleChangePenyesuaian = (e, produkId, produkIndex, varianIndex) => {
     let { value } = e.target;
-    if (!isNaN(+value)) {
-      let onChangeValue = [...dataPenyesuaian[produkIndex].varian];
-      onChangeValue[varianIndex]["stok_aktual"] = value;
-      onChangeValue[varianIndex]["penyesuaian"] =
-        value - onChangeValue[varianIndex]["stok_tersedia"];
-      setDataPenyesuaian((prev) =>
-        prev.map((el) =>
-          el.id === produkId
-            ? {
-                ...el,
-                varian: onChangeValue,
-              }
-            : el
-        )
-      );
-    }
+    let onChangeValue = [...dataPenyesuaian[produkIndex].varian];
+    onChangeValue[varianIndex]["stok_aktual"] = value;
+    onChangeValue[varianIndex]["penyesuaian"] =
+      value - onChangeValue[varianIndex]["stok_tersedia"];
+    setDataPenyesuaian((prev) =>
+      prev.map((el) =>
+        el.id === produkId
+          ? {
+              ...el,
+              varian: onChangeValue,
+            }
+          : el
+      )
+    );
   };
 
   const handleDeletePenyesuaian = (index) => {
@@ -405,8 +401,17 @@ function TambahPenyesuaian({ closeButton, getDataPenyesuaian }) {
                                   varianIndex
                                 )
                               }
-                              type="text"
+                              type="number"
                               required
+                              onFocus={(e) =>
+                                e.target.addEventListener(
+                                  "wheel",
+                                  function (e) {
+                                    e.preventDefault();
+                                  },
+                                  { passive: false }
+                                )
+                              }
                             />
                           </Col>
                           <Col sm={3} className="ps-0">
@@ -536,7 +541,16 @@ function TambahPenyesuaian({ closeButton, getDataPenyesuaian }) {
                             name="stok_aktual"
                             value={item.stok_aktual}
                             onChange={(e) => handleChangeDetail(e, index)}
-                            type="text"
+                            type="number"
+                            onFocus={(e) =>
+                              e.target.addEventListener(
+                                "wheel",
+                                function (e) {
+                                  e.preventDefault();
+                                },
+                                { passive: false }
+                              )
+                            }
                             required
                           />
                         </Col>
