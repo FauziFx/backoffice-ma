@@ -45,6 +45,50 @@ function LaporanRingkas({ data }) {
           </tr>
         </tfoot>
       </Table>
+
+      <Table>
+        <thead>
+          <tr>
+            <th className="bg-lightgrey" style={{ height: "40px" }} colSpan={2}>
+              Metode Pembayaran
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className="border-0 text-grey">Tunai</td>
+            <td className="text-end border-0 text-grey">
+              <FormatRupiah value={data.tunai} />
+            </td>
+          </tr>
+          <tr>
+            <td className="border-0 text-grey">Transfer</td>
+            <td className="text-end border-0 text-grey">
+              <FormatRupiah value={data.transfer} />
+            </td>
+          </tr>
+          <tr>
+            <td className="border-0 text-grey">Qris</td>
+            <td className="text-end border-0 text-grey">
+              <FormatRupiah value={data.qris} />
+            </td>
+          </tr>
+          <tr>
+            <td className="text-grey">EDC</td>
+            <td className="text-end text-grey">
+              <FormatRupiah value={data.edc} />
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th className="fw-bold border-0">Total</th>
+            <th className="fw-bold border-0 text-end">
+              <FormatRupiah value={data.total} />
+            </th>
+          </tr>
+        </tfoot>
+      </Table>
     </>
   );
 }
