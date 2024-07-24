@@ -159,7 +159,6 @@ function LaporanPenjualan() {
         localStorage.clear();
         return navigate("/login");
       } else {
-        console.log(response.data);
         let totalItem = response.data.data.reduce(function (prev, current) {
           return prev + +current.item_terjual;
         }, 0);
@@ -184,9 +183,6 @@ function LaporanPenjualan() {
       <Row>
         <Col>
           <h3>Laporan Penjualan</h3>
-        </Col>
-        <Col>
-          {active == 5 && <Button className="float-end">Export</Button>}
         </Col>
       </Row>
       <Row className="mb-2">
@@ -270,6 +266,7 @@ function LaporanPenjualan() {
               data={laporanMaGrup}
               totalItem={laporanMaGrupTotalItem}
               total={laporanMaGrupTotal}
+              date={state}
             />
           </Container>
         </Col>

@@ -1,10 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Table, Button } from "react-bootstrap";
 import { FormatRupiah } from "@arismun/format-rupiah";
+import { ExportToExcel } from "../utils/ExportToExcel";
+import moment from "moment-timezone";
+import "moment/dist/locale/id";
 
-function LaporanMaGrup({ data, totalItem, total }) {
+function LaporanMaGrup({ data, totalItem, total, date }) {
+  const [dataExport, setDataExport] = useState();
+  const [fileName, setFileName] = useState("");
+  const setData = useMemo(() => {
+    const customHeadings = data.map((item, i) => ({
+      No: i + 1,
+      "Nama Optik": item.nama_pelanggan,
+      "Biaya Lab": item.total,
+    }));
+    customHeadings.push({ "Nama Optik": "TOTAL", "Biaya Lab": total });
+    setDataExport(customHeadings);
+    let r = (Math.random() + 1).toString(36).substring(7);
+    const name =
+      "Ma Grup-" +
+      moment(date.startDate).format("DDMMYYYY") +
+      "-" +
+      moment(date.endDate).format("DDMMYYYY") +
+      "-" +
+      r;
+    setFileName(name);
+  }, [data]);
   return (
     <>
+      <div className="text-end mb-2">
+        <ExportToExcel apiData={dataExport} fileName={fileName} />
+      </div>
       <Table responsive>
         <thead>
           <tr>
