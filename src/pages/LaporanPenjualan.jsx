@@ -35,18 +35,6 @@ function LaporanPenjualan() {
     },
     {
       id: 2,
-      name: "Jenis Penjualan",
-    },
-    {
-      id: 3,
-      name: "Kategori Penjualan",
-    },
-    {
-      id: 4,
-      name: "Penjualan Barang",
-    },
-    {
-      id: 5,
       name: "MA Grup",
     },
   ]);
@@ -59,7 +47,7 @@ function LaporanPenjualan() {
     setActive(id);
     if (id == 1) {
       getLaporanRingkas(state[0].startDate, state[0].endDate);
-    } else if (id == 5) {
+    } else if (id == 2) {
       getLaporanMaGrup(state[0].startDate, state[0].endDate);
     }
   };
@@ -128,6 +116,7 @@ function LaporanPenjualan() {
         return navigate("/login");
       } else {
         setLaporanRingkas(response.data);
+        console.log(response.data);
       }
     } catch (error) {
       console.log(error);
@@ -253,15 +242,6 @@ function LaporanPenjualan() {
             <LaporanRingkas data={laporanRingkas} />
           </Container>
           <Container className={active == 2 ? "d-block" : "d-none"}>
-            <LaporanJenisPenjualan />
-          </Container>
-          <Container className={active == 3 ? "d-block" : "d-none"}>
-            <LaporanKategoriPenjualan />
-          </Container>
-          <Container className={active == 4 ? "d-block" : "d-none"}>
-            <LaporanPenjualanBarang />
-          </Container>
-          <Container className={active == 5 ? "d-block" : "d-none"}>
             <LaporanMaGrup
               data={laporanMaGrup}
               totalItem={laporanMaGrupTotalItem}
