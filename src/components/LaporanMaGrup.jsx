@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { Table, Button } from "react-bootstrap";
+import React, { useState, useMemo, useEffect } from "react";
+import { Table, Button, Alert } from "react-bootstrap";
 import { FormatRupiah } from "@arismun/format-rupiah";
 import { ExportToExcel } from "../utils/ExportToExcel";
 import moment from "moment-timezone";
@@ -8,6 +8,7 @@ import "moment/dist/locale/id";
 function LaporanMaGrup({ data, totalItem, total, date }) {
   const [dataExport, setDataExport] = useState();
   const [fileName, setFileName] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
   const setData = useMemo(() => {
     const customHeadings = data.map((item, i) => ({
       No: i + 1,
@@ -25,9 +26,25 @@ function LaporanMaGrup({ data, totalItem, total, date }) {
       "-" +
       r;
     setFileName(name);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 5000);
   }, [data]);
+
   return (
     <>
+      <Alert
+        show={showAlert}
+        variant="info"
+        onClose={() => setShowAlert(false)}
+        dismissible
+      >
+        <Alert.Heading>Informasi !</Alert.Heading>
+        <p className="mb-1">
+          Sekarang udah bisa export datanya ke Excel (Klik Download!!)
+        </p>
+      </Alert>
       <div className="text-end mb-2">
         <ExportToExcel apiData={dataExport} fileName={fileName} />
       </div>
