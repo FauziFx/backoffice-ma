@@ -1,27 +1,49 @@
 import React, { useState, useMemo } from "react";
 import { Table } from "react-bootstrap";
 import { FormatRupiah } from "@arismun/format-rupiah";
-import { ExportToExcel } from "../utils/ExportToExcel";
 import moment from "moment-timezone";
 import "moment/dist/locale/id";
+import { ExportToExcelMultiple } from "../utils/ExportToExcelMultiple";
 
-function LaporanRingkas({ data, dataExport, date }) {
+function LaporanRingkas({
+  data,
+  dataGrosir,
+  dataMagrup,
+  dataMagrupTotal,
+  startDate,
+  endDate,
+}) {
+  const [dataMagrupExport, setDataMagrupExport] = useState();
   const [fileName, setFileName] = useState("");
   const setData = useMemo(() => {
+    const customHeadings = dataMagrup.map((item, i) => ({
+      No: i + 1,
+      "Nama Optik": item.nama_pelanggan,
+      "Biaya Lab": item.total,
+    }));
+    customHeadings.push({
+      "Nama Optik": "TOTAL",
+      "Biaya Lab": dataMagrupTotal,
+    });
+    setDataMagrupExport(customHeadings);
     let r = (Math.random() + 1).toString(36).substring(7);
     const name =
       "Ma Bahagia-" +
-      moment(date.startDate).format("DDMMYYYY") +
+      moment(startDate).format("DDMMYYYY") +
       "-" +
-      moment(date.endDate).format("DDMMYYYY") +
+      moment(endDate).format("DDMMYYYY") +
       "-" +
       r;
     setFileName(name);
-  }, [data]);
+  }, [data, startDate, endDate]);
   return (
     <>
       <div className="text-end mb-2">
-        <ExportToExcel apiData={dataExport} fileName={fileName} />
+        <ExportToExcelMultiple
+          dataGrosir={dataGrosir}
+          dataMagrup={dataMagrupExport}
+          fileName={fileName}
+        />
       </div>
       <Table>
         <thead>

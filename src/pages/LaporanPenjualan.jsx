@@ -21,7 +21,7 @@ import "moment/dist/locale/id";
 function LaporanPenjualan() {
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
-  const [dataExport, setDataExport] = useState([]);
+  const [dataExportGrosir, setDataExportGrosir] = useState([]);
   const [laporanRingkas, setLaporanRingkas] = useState({});
   const [laporanMaGrup, setLaporanMaGrup] = useState([]);
   const [laporanMaGrupTotalItem, setLaporanMaGrupTotalItem] = useState(0);
@@ -123,6 +123,7 @@ function LaporanPenjualan() {
   const handleFilterTanggal = () => {
     if (active == 1) {
       getLaporanRingkas(state[0].startDate, state[0].endDate);
+      getLaporanMaGrup(state[0].startDate, state[0].endDate);
     } else if (active == 5) {
       getLaporanMaGrup(state[0].startDate, state[0].endDate);
     }
@@ -212,46 +213,45 @@ function LaporanPenjualan() {
         }, 0);
 
         const data = response.data.data.map((item, i) => ({
-          tanggal: moment(item.tanggal).tz("Asia/Jakarta").format("L"),
-          total: item.total,
+          Tanggal: moment(item.tanggal).tz("Asia/Jakarta").format("L"),
+          Total: item.total,
         }));
         data.push(
           {
-            tanggal:
+            Tanggal:
               MAkarangsembung.data.data === undefined
                 ? "MA KARANGSEMBUNG"
                 : MAkarangsembung.data.data.nama_pelanggan,
-            total:
+            Total:
               MAkarangsembung.data.data === undefined
                 ? 0
                 : MAkarangsembung.data.data.total,
           },
           {
-            tanggal:
+            Tanggal:
               MAsindang.data.data === undefined
                 ? "MA SINDANG"
                 : MAsindang.data.data.nama_pelanggan,
-            total:
+            Total:
               MAsindang.data.data === undefined ? 0 : MAsindang.data.data.total,
           },
           {
-            tanggal:
+            Tanggal:
               MAsandang.data.data === undefined
                 ? "SANDANG MATA"
                 : MAsandang.data.data.nama_pelanggan,
-            total:
+            Total:
               MAsandang.data.data === undefined ? 0 : MAsandang.data.data.total,
           }
         );
         let totalLaporan = data.reduce(function (prev, current) {
-          return prev + +current.total;
+          return prev + +current.Total;
         }, 0);
         data.push({
-          tanggal: "TOTAL",
-          total: totalLaporan,
+          Tanggal: "TOTAL",
+          Total: totalLaporan,
         });
-        setDataExport(data);
-        console.log(data);
+        setDataExportGrosir(data);
       }
     } catch (error) {
       console.log(error);
@@ -261,6 +261,7 @@ function LaporanPenjualan() {
   useEffect(() => {
     getLaporanRingkas();
     getLaporan(state[0].startDate, state[0].endDate);
+    getLaporanMaGrup(state[0].startDate, state[0].endDate);
   }, [state]);
 
   return (
@@ -337,8 +338,11 @@ function LaporanPenjualan() {
           <Container className={active == 1 ? "d-block" : "d-none"}>
             <LaporanRingkas
               data={laporanRingkas}
-              dataExport={dataExport}
-              date={state}
+              dataGrosir={dataExportGrosir}
+              dataMagrup={laporanMaGrup}
+              dataMagrupTotal={laporanMaGrupTotal}
+              startDate={state[0].startDate}
+              endDate={state[0].endDate}
             />
           </Container>
           <Container className={active == 2 ? "d-block" : "d-none"}>
@@ -346,7 +350,8 @@ function LaporanPenjualan() {
               data={laporanMaGrup}
               totalItem={laporanMaGrupTotalItem}
               total={laporanMaGrupTotal}
-              date={state}
+              startDate={state[0].startDate}
+              endDate={state[0].endDate}
             />
           </Container>
         </Col>
