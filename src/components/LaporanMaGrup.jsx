@@ -5,7 +5,7 @@ import { ExportToExcel } from "../utils/ExportToExcel";
 import moment from "moment-timezone";
 import "moment/dist/locale/id";
 
-function LaporanMaGrup({ data, totalItem, total, date }) {
+function LaporanMaGrup({ data, totalItem, total, startDate, endDate }) {
   const [dataExport, setDataExport] = useState();
   const [fileName, setFileName] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -20,9 +20,9 @@ function LaporanMaGrup({ data, totalItem, total, date }) {
     let r = (Math.random() + 1).toString(36).substring(7);
     const name =
       "Ma Grup-" +
-      moment(date.startDate).format("DDMMYYYY") +
+      moment(startDate).format("DDMMYYYY") +
       "-" +
-      moment(date.endDate).format("DDMMYYYY") +
+      moment(endDate).format("DDMMYYYY") +
       "-" +
       r;
     setFileName(name);
@@ -30,7 +30,7 @@ function LaporanMaGrup({ data, totalItem, total, date }) {
     setTimeout(() => {
       setShowAlert(false);
     }, 5000);
-  }, [data]);
+  }, [data, startDate, endDate]);
 
   return (
     <>
