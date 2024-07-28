@@ -12,9 +12,6 @@ import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import { format, addDays } from "date-fns";
 import { DateRangePicker } from "react-date-range";
 import LaporanRingkas from "../components/LaporanRingkas";
-import LaporanJenisPenjualan from "../components/LaporanJenisPenjualan";
-import LaporanKategoriPenjualan from "../components/LaporanKategoriPenjualan";
-import LaporanPenjualanBarang from "../components/LaporanPenjualanBarang";
 import LaporanMaGrup from "../components/LaporanMaGrup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +21,7 @@ import "moment/dist/locale/id";
 function LaporanPenjualan() {
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+  const [dataExport, setDataExport] = useState([]);
   const [laporanRingkas, setLaporanRingkas] = useState({});
   const [laporanMaGrup, setLaporanMaGrup] = useState([]);
   const [laporanMaGrupTotalItem, setLaporanMaGrupTotalItem] = useState(0);
@@ -116,7 +114,6 @@ function LaporanPenjualan() {
         return navigate("/login");
       } else {
         setLaporanRingkas(response.data);
-        console.log(response.data);
       }
     } catch (error) {
       console.log(error);
@@ -163,9 +160,108 @@ function LaporanPenjualan() {
     }
   };
 
+  const getLaporan = async (startDate, endDate) => {
+    try {
+      moment.locale("id");
+      const URL = API + "laporan";
+      const response = await axios.get(URL, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      const MAkarangsembung = await axios.get(URL + "/magrup/" + 10, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      const MAsindang = await axios.get(URL + "/magrup/" + 14, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      const MAsandang = await axios.get(URL + "/magrup/" + 18, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        let totalItem = response.data.data.reduce(function (prev, current) {
+          return prev + +current.item_terjual;
+        }, 0);
+        let total = response.data.data.reduce(function (prev, current) {
+          return prev + +current.total;
+        }, 0);
+
+        const data = response.data.data.map((item, i) => ({
+          tanggal: moment(item.tanggal).tz("Asia/Jakarta").format("L"),
+          total: item.total,
+        }));
+        data.push(
+          {
+            tanggal:
+              MAkarangsembung.data.data === undefined
+                ? "MA KARANGSEMBUNG"
+                : MAkarangsembung.data.data.nama_pelanggan,
+            total:
+              MAkarangsembung.data.data === undefined
+                ? 0
+                : MAkarangsembung.data.data.total,
+          },
+          {
+            tanggal:
+              MAsindang.data.data === undefined
+                ? "MA SINDANG"
+                : MAsindang.data.data.nama_pelanggan,
+            total:
+              MAsindang.data.data === undefined ? 0 : MAsindang.data.data.total,
+          },
+          {
+            tanggal:
+              MAsandang.data.data === undefined
+                ? "SANDANG MATA"
+                : MAsandang.data.data.nama_pelanggan,
+            total:
+              MAsandang.data.data === undefined ? 0 : MAsandang.data.data.total,
+          }
+        );
+        let totalLaporan = data.reduce(function (prev, current) {
+          return prev + +current.total;
+        }, 0);
+        data.push({
+          tanggal: "TOTAL",
+          total: totalLaporan,
+        });
+        setDataExport(data);
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getLaporanRingkas();
-  }, []);
+    getLaporan(state[0].startDate, state[0].endDate);
+  }, [state]);
 
   return (
     <Container className="pt-4">
@@ -239,7 +335,11 @@ function LaporanPenjualan() {
         </Col>
         <Col sm={12} md={9}>
           <Container className={active == 1 ? "d-block" : "d-none"}>
-            <LaporanRingkas data={laporanRingkas} />
+            <LaporanRingkas
+              data={laporanRingkas}
+              dataExport={dataExport}
+              date={state}
+            />
           </Container>
           <Container className={active == 2 ? "d-block" : "d-none"}>
             <LaporanMaGrup

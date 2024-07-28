@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Table } from "react-bootstrap";
 import { FormatRupiah } from "@arismun/format-rupiah";
+import { ExportToExcel } from "../utils/ExportToExcel";
+import moment from "moment-timezone";
+import "moment/dist/locale/id";
 
-function LaporanRingkas({ data }) {
+function LaporanRingkas({ data, dataExport, date }) {
+  const [fileName, setFileName] = useState("");
+  const setData = useMemo(() => {
+    let r = (Math.random() + 1).toString(36).substring(7);
+    const name =
+      "Ma Bahagia-" +
+      moment(date.startDate).format("DDMMYYYY") +
+      "-" +
+      moment(date.endDate).format("DDMMYYYY") +
+      "-" +
+      r;
+    setFileName(name);
+  }, [data]);
   return (
     <>
+      <div className="text-end mb-2">
+        <ExportToExcel apiData={dataExport} fileName={fileName} />
+      </div>
       <Table>
         <thead>
           <tr>
