@@ -29,7 +29,9 @@
     "react-spinners": "^0.13.8",
     "sweetalert2": "^11.10.6",
     "universal-cookie": "^7.1.4",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "react-data-table-component": "^7.6.2",
+    "styled-components": "^5.3.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.56",

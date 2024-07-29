@@ -18,6 +18,8 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
+import Eceran from "./pages/Eceran";
+import TambahEceran from "./pages/TambahEceran";
 
 function App() {
   const [user, setUser] = useState({});
@@ -50,6 +52,14 @@ function App() {
             {
               path: "/",
               element: <Dashboard />,
+            },
+            {
+              path: "/eceran",
+              element: <Eceran />,
+            },
+            {
+              path: "/eceran/tambah",
+              element: <TambahEceran />,
             },
             {
               path: "/produk/data-produk",
