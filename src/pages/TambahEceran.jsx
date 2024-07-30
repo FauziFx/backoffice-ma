@@ -19,6 +19,154 @@ import "moment/dist/locale/id";
 function TambahEceran() {
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+  });
+
+  const [data, setData] = useState({
+    no_nota: "",
+    nama: "",
+    alamat: "",
+    nohp: "",
+    frame: "",
+    lensa: "",
+    harga: "",
+    rsph: "",
+    rcyl: "",
+    raxis: "",
+    radd: "",
+    lsph: "",
+    lcyl: "",
+    laxis: "",
+    ladd: "",
+    tanggal: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
+  });
+
+  const handleChange = (e) => {
+    setData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleChangePower = (e) => {
+    const value = e.target.value;
+    if (!isNaN(value)) {
+      setData((prev) => ({
+        ...prev,
+        [e.target.name]: value,
+      }));
+    } else if (value == "-" || value == "+") {
+      setData((prev) => ({
+        ...prev,
+        [e.target.name]: value,
+      }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const od = [data.rsph, data.rcyl, data.raxis, data.radd].join("/");
+
+      const os = [data.lsph, data.lcyl, data.laxis, data.ladd].join("/");
+
+      const URL = API + "eceran";
+      const response = await axios.post(
+        URL,
+        {
+          no_nota: data.no_nota,
+          nama: data.nama,
+          alamat: data.alamat,
+          nohp: data.nohp,
+          frame: data.frame,
+          lensa: data.lensa,
+          harga: parseInt(data.harga.split(",").join("")),
+          tanggal: data.tanggal,
+          r: od,
+          l: os,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("user-token"),
+          },
+        }
+      );
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        console.log(response.data);
+        if (response.data.success) {
+          setData({
+            no_nota: "",
+            nama: "",
+            alamat: "",
+            nohp: "",
+            frame: "",
+            lensa: "",
+            harga: "",
+            rsph: "",
+            rcyl: "",
+            raxis: "",
+            radd: "",
+            lsph: "",
+            lcyl: "",
+            laxis: "",
+            ladd: "",
+            tanggal: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
+          });
+          Toast.fire({
+            icon: "success",
+            title: response.data.message,
+          });
+        } else {
+          Toast.fire({
+            icon: "success",
+            title: "Something Error!!!",
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addCommas = (num) =>
+    num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const removeNonNumeric = (num) => num.toString().replace(/[^0-9]/g, "");
+
+  const getNoNota = async () => {
+    try {
+      const URL = API + "eceran/no_nota";
+      const response = await axios.get(URL, {
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        setData((prev) => ({
+          ...prev,
+          no_nota: response.data.data,
+        }));
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getNoNota();
+  }, []);
+
   return (
     <Container className="pt-4 pb-4">
       <Row>
@@ -41,7 +189,7 @@ function TambahEceran() {
               <i className="text-danger" style={{ fontSize: "12px" }}>
                 * Wajib Diisi
               </i>
-              <Form autoComplete="off">
+              <Form autoComplete="off" onSubmit={handleSubmit}>
                 <Form.Group className="mb-1">
                   <Form.Label column>
                     Tanggal <i className="text-danger">*</i>
@@ -50,8 +198,8 @@ function TambahEceran() {
                     type="date"
                     required
                     name="tanggal"
-                    // value={dataUser.nama}
-                    // onChange={(e) => handleChange(e)}
+                    value={data.tanggal}
+                    onChange={(e) => handleChange(e)}
                     autoComplete="off"
                   />
                 </Form.Group>
@@ -64,9 +212,10 @@ function TambahEceran() {
                     required
                     name="no_nota"
                     placeholder="No Nota"
-                    // value={dataUser.nama}
-                    // onChange={(e) => handleChange(e)}
+                    value={data.no_nota}
+                    onChange={(e) => handleChange(e)}
                     autoComplete="off"
+                    autoFocus
                   />
                 </Form.Group>
                 <Form.Group className="mb-1">
@@ -78,8 +227,35 @@ function TambahEceran() {
                     required
                     name="nama"
                     placeholder="Nama"
-                    // value={dataUser.nama}
-                    // onChange={(e) => handleChange(e)}
+                    value={data.nama}
+                    onChange={(e) => handleChange(e)}
+                    autoComplete="off"
+                  />
+                </Form.Group>
+                <Form.Group className="mb-1">
+                  <Form.Label column>Alamat</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    name="alamat"
+                    placeholder="Alamat"
+                    value={data.alamat}
+                    onChange={(e) => handleChange(e)}
+                    autoComplete="off"
+                  />
+                </Form.Group>
+                <Form.Group className="mb-1">
+                  <Form.Label column>No Hp</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="nohp"
+                    placeholder="No Hp"
+                    value={data.nohp}
+                    onChange={(e) => {
+                      setData((prev) => ({
+                        ...prev,
+                        nohp: removeNonNumeric(e.target.value),
+                      }));
+                    }}
                     autoComplete="off"
                   />
                 </Form.Group>
@@ -89,8 +265,8 @@ function TambahEceran() {
                     type="text"
                     name="frame"
                     placeholder="Frame"
-                    // value={dataUser.nama}
-                    // onChange={(e) => handleChange(e)}
+                    value={data.frame}
+                    onChange={(e) => handleChange(e)}
                     autoComplete="off"
                   />
                 </Form.Group>
@@ -100,8 +276,8 @@ function TambahEceran() {
                     type="text"
                     name="lensa"
                     placeholder="Lensa"
-                    // value={dataUser.nama}
-                    // onChange={(e) => handleChange(e)}
+                    value={data.lensa}
+                    onChange={(e) => handleChange(e)}
                     autoComplete="off"
                   />
                 </Form.Group>
@@ -115,8 +291,13 @@ function TambahEceran() {
                       type="text"
                       name="harga"
                       placeholder="0"
-                      // value={dataUser.nama}
-                      // onChange={(e) => handleChange(e)}
+                      value={data.harga}
+                      onChange={(e) => {
+                        setData((prev) => ({
+                          ...prev,
+                          harga: addCommas(removeNonNumeric(e.target.value)),
+                        }));
+                      }}
                       autoComplete="off"
                     />
                   </InputGroup>
@@ -136,8 +317,8 @@ function TambahEceran() {
                         size="sm"
                         type="text"
                         placeholder="SPH"
-                        // value={ukuranBaru.rsph}
-                        // onChange={(e) => handleChangeUbPower(e)}
+                        value={data.rsph}
+                        onChange={(e) => handleChangePower(e)}
                       />
                     </Col>
                     <Col xs className="p-0">
@@ -146,8 +327,8 @@ function TambahEceran() {
                         size="sm"
                         type="text"
                         placeholder="CYL"
-                        // value={ukuranBaru.rcyl}
-                        // onChange={(e) => handleChangeUbPower(e)}
+                        value={data.rcyl}
+                        onChange={(e) => handleChangePower(e)}
                       />
                     </Col>
                     <Col xs className="p-0">
@@ -156,8 +337,8 @@ function TambahEceran() {
                         size="sm"
                         type="text"
                         placeholder="AXIS"
-                        // value={ukuranBaru.raxis}
-                        // onChange={(e) => handleChangeUbPower(e)}
+                        value={data.raxis}
+                        onChange={(e) => handleChangePower(e)}
                       />
                     </Col>
                     <Col xs className="p-0">
@@ -166,8 +347,8 @@ function TambahEceran() {
                         size="sm"
                         type="text"
                         placeholder="ADD"
-                        // value={ukuranBaru.radd}
-                        // onChange={(e) => handleChangeUbPower(e)}
+                        value={data.radd}
+                        onChange={(e) => handleChangePower(e)}
                       />
                     </Col>
                   </Row>
@@ -185,8 +366,8 @@ function TambahEceran() {
                         size="sm"
                         type="text"
                         placeholder="SPH"
-                        // value={ukuranBaru.lsph}
-                        // onChange={(e) => handleChangeUbPower(e)}
+                        value={data.lsph}
+                        onChange={(e) => handleChangePower(e)}
                       />
                     </Col>
                     <Col xs className="p-0">
@@ -195,8 +376,8 @@ function TambahEceran() {
                         size="sm"
                         type="text"
                         placeholder="CYL"
-                        // value={ukuranBaru.lcyl}
-                        // onChange={(e) => handleChangeUbPower(e)}
+                        value={data.lcyl}
+                        onChange={(e) => handleChangePower(e)}
                       />
                     </Col>
                     <Col xs className="p-0">
@@ -205,8 +386,8 @@ function TambahEceran() {
                         size="sm"
                         type="text"
                         placeholder="AXIS"
-                        // value={ukuranBaru.laxis}
-                        // onChange={(e) => handleChangeUbPower(e)}
+                        value={data.laxis}
+                        onChange={(e) => handleChangePower(e)}
                       />
                     </Col>
                     <Col xs className="p-0">
@@ -215,8 +396,8 @@ function TambahEceran() {
                         size="sm"
                         type="text"
                         placeholder="ADD"
-                        // value={ukuranBaru.ladd}
-                        // onChange={(e) => handleChangeUbPower(e)}
+                        value={data.ladd}
+                        onChange={(e) => handleChangePower(e)}
                       />
                     </Col>
                   </Row>
