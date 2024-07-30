@@ -101,7 +101,6 @@ function TambahEceran() {
         localStorage.clear();
         return navigate("/login");
       } else {
-        console.log(response.data);
         if (response.data.success) {
           setData({
             no_nota: "",
