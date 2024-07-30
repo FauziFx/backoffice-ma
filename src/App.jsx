@@ -20,6 +20,8 @@ import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import Eceran from "./pages/Eceran";
 import TambahEceran from "./pages/TambahEceran";
+import EditEceran from "./pages/EditEceran";
+import DetailEceran from "./pages/DetailEceran";
 
 function App() {
   const [user, setUser] = useState({});
@@ -60,6 +62,14 @@ function App() {
             {
               path: "/eceran/tambah",
               element: <TambahEceran />,
+            },
+            {
+              path: "/eceran/edit",
+              element: <EditEceran />,
+            },
+            {
+              path: "/eceran/detail",
+              element: <DetailEceran />,
             },
             {
               path: "/produk/data-produk",

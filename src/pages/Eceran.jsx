@@ -17,6 +17,14 @@ function Eceran() {
   const [filter, setFilter] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+  });
+
   const columns = [
     {
       name: "Tanggal",
@@ -49,10 +57,18 @@ function Eceran() {
       name: "Action",
       selector: (row) => (
         <>
-          <Button variant="link" className="p-2 me-1 text-success">
+          <Button
+            variant="link"
+            className="p-2 me-1 text-success"
+            onClick={() => navigate("/eceran/edit", { state: { row } })}
+          >
             <PencilSquare />
           </Button>
-          <Button variant="link" className="p-2 text-danger">
+          <Button
+            variant="link"
+            className="p-2 text-danger"
+            onClick={() => confirmDelete(row.id)}
+          >
             <Trash3Fill />
           </Button>
         </>
@@ -61,6 +77,44 @@ function Eceran() {
       right: true,
     },
   ];
+
+  const confirmDelete = (id) => {
+    Swal.fire({
+      title: "Hapus data eceran?",
+      showDenyButton: true,
+      denyButtonText: "Batal",
+      confirmButtonText: "Hapus",
+      confirmButtonColor: "#dc3741",
+      denyButtonColor: "#0d6efd",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteEceran(id);
+      }
+    });
+  };
+
+  const deleteEceran = async (id) => {
+    try {
+      const URL = API + "eceran/" + id;
+      const response = await axios.delete(URL, {
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        getData();
+        Toast.fire({
+          icon: "success",
+          title: response.data.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getData = async () => {
     try {
@@ -93,7 +147,7 @@ function Eceran() {
         <Col>
           <h3>Eceran</h3>
         </Col>
-        <Col className="d-none d-sm-none d-md-block">
+        <Col>
           <span className="float-end">
             <Button onClick={() => navigate("/eceran/tambah")}>Tambah</Button>
           </span>
@@ -126,7 +180,9 @@ function Eceran() {
               pagination
               highlightOnHover
               paginationPerPage={20}
-              onRowClicked={() => alert("tesss")}
+              onRowClicked={(row) =>
+                navigate("/eceran/detail", { state: { row } })
+              }
               customStyles={tableCustomStyles}
             />
           </LoadingOverlay>
