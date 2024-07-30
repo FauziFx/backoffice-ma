@@ -22,6 +22,8 @@ function LaporanPenjualan() {
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [dataExportGrosir, setDataExportGrosir] = useState([]);
+  const [dataExportEceran, setDataExportEceran] = useState([]);
+  const [dataExportTotal, setDataExportTotal] = useState([]);
   const [laporanRingkas, setLaporanRingkas] = useState({});
   const [laporanMaGrup, setLaporanMaGrup] = useState([]);
   const [laporanMaGrupTotalItem, setLaporanMaGrupTotalItem] = useState(0);
@@ -45,6 +47,9 @@ function LaporanPenjualan() {
     setActive(id);
     if (id == 1) {
       getLaporanRingkas(state[0].startDate, state[0].endDate);
+      getLaporanMaGrup(state[0].startDate, state[0].endDate);
+      getLaporan(state[0].startDate, state[0].endDate);
+      getLaporanEceran(state[0].startDate, state[0].endDate);
     } else if (id == 2) {
       getLaporanMaGrup(state[0].startDate, state[0].endDate);
     }
@@ -72,6 +77,9 @@ function LaporanPenjualan() {
 
     if (active == 1) {
       getLaporanRingkas(state[0].startDate, state[0].endDate);
+      getLaporanMaGrup(state[0].startDate, state[0].endDate);
+      getLaporan(state[0].startDate, state[0].endDate);
+      getLaporanEceran(state[0].startDate, state[0].endDate);
     } else if (active == 5) {
       getLaporanMaGrup(state[0].startDate, state[0].endDate);
     }
@@ -91,6 +99,9 @@ function LaporanPenjualan() {
 
     if (active == 1) {
       getLaporanRingkas(state[0].startDate, state[0].endDate);
+      getLaporanMaGrup(state[0].startDate, state[0].endDate);
+      getLaporan(state[0].startDate, state[0].endDate);
+      getLaporanEceran(state[0].startDate, state[0].endDate);
     } else if (active == 5) {
       getLaporanMaGrup(state[0].startDate, state[0].endDate);
     }
@@ -152,9 +163,56 @@ function LaporanPenjualan() {
         let total = response.data.data.reduce(function (prev, current) {
           return prev + +current.total;
         }, 0);
+        setDataExportTotal((prev) => ({
+          ...prev,
+          magrup: total,
+        }));
         setLaporanMaGrup(response.data.data);
         setLaporanMaGrupTotalItem(totalItem);
         setLaporanMaGrupTotal(total);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getLaporanEceran = async (startDate, endDate) => {
+    try {
+      moment.locale("id");
+      const URL = API + "laporan/eceran";
+      const response = await axios.get(URL, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        let data = response.data.data;
+        let total = data.reduce(function (prev, current) {
+          return prev + +current.Total;
+        }, 0);
+        const customHeadings = data.map((item, i) => ({
+          No: i + 1,
+          Tanggal: moment(item.Tanggal)
+            .tz("Asia/Jakarta")
+            .format("DD MMMM YYYY"),
+          Total: parseInt(item.Total),
+        }));
+        setDataExportTotal((prev) => ({
+          ...prev,
+          eceran: total,
+        }));
+        customHeadings.push(
+          { Tanggal: "", Total: "" },
+          { Tanggal: "TOTAL", Total: total }
+        );
+        setDataExportEceran(customHeadings);
       }
     } catch (error) {
       console.log(error);
@@ -205,15 +263,10 @@ function LaporanPenjualan() {
         localStorage.clear();
         return navigate("/login");
       } else {
-        let totalItem = response.data.data.reduce(function (prev, current) {
-          return prev + +current.item_terjual;
-        }, 0);
-        let total = response.data.data.reduce(function (prev, current) {
-          return prev + +current.total;
-        }, 0);
-
         const data = response.data.data.map((item, i) => ({
-          Tanggal: moment(item.tanggal).tz("Asia/Jakarta").format("L"),
+          Tanggal: moment(item.tanggal)
+            .tz("Asia/Jakarta")
+            .format("DD MMMM YYYY"),
           Total: item.total,
         }));
         data.push(
@@ -247,10 +300,20 @@ function LaporanPenjualan() {
         let totalLaporan = data.reduce(function (prev, current) {
           return prev + +current.Total;
         }, 0);
-        data.push({
-          Tanggal: "TOTAL",
-          Total: totalLaporan,
-        });
+        setDataExportTotal((prev) => ({
+          ...prev,
+          grosir: totalLaporan,
+        }));
+        data.push(
+          {
+            Tanggal: "",
+            Total: "",
+          },
+          {
+            Tanggal: "TOTAL",
+            Total: totalLaporan,
+          }
+        );
         setDataExportGrosir(data);
       }
     } catch (error) {
@@ -261,6 +324,7 @@ function LaporanPenjualan() {
   useEffect(() => {
     getLaporanRingkas();
     getLaporan(state[0].startDate, state[0].endDate);
+    getLaporanEceran(state[0].startDate, state[0].endDate);
     getLaporanMaGrup(state[0].startDate, state[0].endDate);
   }, [state]);
 
@@ -339,8 +403,10 @@ function LaporanPenjualan() {
             <LaporanRingkas
               data={laporanRingkas}
               dataGrosir={dataExportGrosir}
+              dataEceran={dataExportEceran}
               dataMagrup={laporanMaGrup}
               dataMagrupTotal={laporanMaGrupTotal}
+              dataTotal={dataExportTotal}
               startDate={state[0].startDate}
               endDate={state[0].endDate}
             />

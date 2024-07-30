@@ -8,24 +8,33 @@ import { ExportToExcelMultiple } from "../utils/ExportToExcelMultiple";
 function LaporanRingkas({
   data,
   dataGrosir,
+  dataEceran,
   dataMagrup,
   dataMagrupTotal,
+  dataTotal,
   startDate,
   endDate,
 }) {
-  const [dataMagrupExport, setDataMagrupExport] = useState();
+  const [dataExportMagrup, setDataExportMaGrup] = useState();
+  const [dataExportTotal, setDataExportTotal] = useState();
   const [fileName, setFileName] = useState("");
   const setData = useMemo(() => {
-    const customHeadings = dataMagrup.map((item, i) => ({
+    let customHeadings = dataMagrup.map((item, i) => ({
       No: i + 1,
       "Nama Optik": item.nama_pelanggan,
       "Biaya Lab": item.total,
     }));
-    customHeadings.push({
-      "Nama Optik": "TOTAL",
-      "Biaya Lab": dataMagrupTotal,
-    });
-    setDataMagrupExport(customHeadings);
+    customHeadings.push(
+      {
+        "Nama Optik": "",
+        "Biaya Lab": "",
+      },
+      {
+        "Nama Optik": "TOTAL",
+        "Biaya Lab": dataMagrupTotal,
+      }
+    );
+    setDataExportMaGrup(customHeadings);
     let r = (Math.random() + 1).toString(36).substring(7);
     const name =
       "Ma Bahagia-" +
@@ -35,13 +44,21 @@ function LaporanRingkas({
       "-" +
       r;
     setFileName(name);
+    let total = [dataTotal];
+    let headingTotal = total.map((item, i) => ({
+      "Grosir + Eceran": parseInt(item.grosir) + parseInt(item.eceran),
+      "MA GRUP": parseInt(item.magrup),
+    }));
+    setDataExportTotal(headingTotal);
   }, [data, startDate, endDate]);
   return (
     <>
       <div className="text-end mb-2">
         <ExportToExcelMultiple
           dataGrosir={dataGrosir}
-          dataMagrup={dataMagrupExport}
+          dataEceran={dataEceran}
+          dataMagrup={dataExportMagrup}
+          dataTotal={dataExportTotal}
           fileName={fileName}
         />
       </div>
