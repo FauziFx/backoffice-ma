@@ -137,3 +137,27 @@ input::-webkit-inner-spin-button {
 ._loading_overlay_overlay {
   background-color: rgb(255 255 255 / 40%) !important;
 }
+
+.border-left-primary {
+  border-left: 0.35rem solid var(--bs-primary) !important;
+}
+
+.border-left-info {
+  border-left: 0.35rem solid var(--bs-info) !important;
+}
+
+.border-left-dark {
+  border-left: 0.35rem solid var(--bs-dark) !important;
+}
+
+.border-left-blue {
+  border-left: 0.35rem solid var(--bs-blue) !important;
+}
+
+.text-gray-300 {
+  color: #dddfeb !important;
+}
+
+.text-gray-800 {
+  color: #5a5c69 !important;
+}
