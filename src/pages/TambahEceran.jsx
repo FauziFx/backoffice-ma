@@ -120,6 +120,7 @@ function TambahEceran() {
             ladd: "",
             tanggal: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
           });
+          getNoNota();
           Toast.fire({
             icon: "success",
             title: response.data.message,
