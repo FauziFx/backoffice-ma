@@ -16,6 +16,7 @@ function Eceran() {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [search, setSearch] = useState("");
 
   const Toast = Swal.mixin({
     toast: true,
@@ -141,6 +142,16 @@ function Eceran() {
     getData();
   }, []);
 
+  useEffect(() => {
+    let filterSearch = data.filter((item) => {
+      return (
+        item.nama.toLowerCase().includes(search.toLocaleLowerCase()) ||
+        item.no_nota.toLowerCase().includes(search.toLocaleLowerCase())
+      );
+    });
+    setFilter(filterSearch);
+  }, [search]);
+
   return (
     <Container className="pt-4">
       <Row>
@@ -162,9 +173,9 @@ function Eceran() {
                 <Form.Control
                   type="text"
                   id="search-data"
-                  //   value={searchInput}
-                  //   onChange={(e) => handleChangeSearch(e)}
-                  placeholder="Cari..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Cari No Nota / Nama..."
                 />
                 <InputGroup.Text id="basic-addon2">
                   <Search />
