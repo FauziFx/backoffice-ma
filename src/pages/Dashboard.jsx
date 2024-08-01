@@ -14,6 +14,10 @@ import {
   faReceipt,
   faTable,
 } from "@fortawesome/free-solid-svg-icons";
+import { FormatRupiah } from "@arismun/format-rupiah";
+import { Line } from "react-chartjs-2";
+import "chart.js/auto";
+import CountUp from "react-countup";
 
 function Dashboard() {
   let tgl = moment().tz("Asia/Jakarta").format("dddd, MMMM Do YYYY");
@@ -28,6 +32,32 @@ function Dashboard() {
   };
   setInterval(UpdateTime);
 
+  const dataChartGrosir = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    datasets: [
+      {
+        label: "Grosir",
+        data: [33, 53, 85, 41, 44, 65],
+        fill: true,
+        backgroundColor: "#0d6efda3",
+        borderColor: "#0d6efd",
+      },
+    ],
+  };
+
+  const dataChartMaGrup = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    datasets: [
+      {
+        label: "Grosir",
+        data: [33, 53, 85, 41, 44, 65],
+        fill: true,
+        backgroundColor: "#6610f2a3",
+        borderColor: "#6610f2",
+      },
+    ],
+  };
+
   const [state, setState] = useState([
     {
       startDate: new Date(),
@@ -35,6 +65,7 @@ function Dashboard() {
       key: "selection",
     },
   ]);
+
   return (
     <Container className="pt-4">
       <h3>Dashboard</h3>
@@ -43,6 +74,7 @@ function Dashboard() {
           <Calendar /> {tanggal}
           <Clock className="ms-2" /> {waktu} WIB
         </Col>
+        {/* Date Range */}
         <Col md={4} className="d-flex justify-content-center mt-1">
           <Dropdown className="date-filter btn-group">
             <Dropdown.Toggle
@@ -81,32 +113,119 @@ function Dashboard() {
         </Col>
       </Row>
 
-      <Row className="mt-2">
-        <Col xl={3} md={6}>
-          <Card className="shadow border-left-dark mb-3">
+      {/* Panel */}
+      <Row className="pt-1">
+        <Col xl={3} md={6} className="my-1">
+          <Card className="shadow border-left-primary">
             <Card.Body>
               <Row>
                 <Col xs={9}>
-                  <h6 className="text-lighter text-dark mb-0">
-                    Rata-Rata Grosir
-                  </h6>
-                  <h3 className="text-gray-800">
-                    {/* <CountUp end={total.totalPasien} /> */}
-                    100.000
-                  </h3>
-                  {/* <span className="text-success">
-                    5%
-                    <FontAwesomeIcon icon={faArrowTrendUp} className="ms-1" />
-                  </span> */}
-                  <span className="text-danger">
-                    -5%
-                    <FontAwesomeIcon icon={faArrowTrendDown} className="ms-1" />
-                  </span>
+                  <div className="text-lighter text-dark mb-1">
+                    Rata-Rata <strong>Grosir</strong>
+                  </div>
+                  <h4 className="text-gray-800 mt-2">
+                    Rp <CountUp end={3500000} />
+                  </h4>
                 </Col>
-                <Col xs={3} className="text-gray-800 text-end pt-3">
-                  <FontAwesomeIcon icon={faChartLine} size="2x" />
+                <Col xs={3} className="text-success text-end pt-3 ">
+                  <FontAwesomeIcon icon={faArrowTrendUp} size="2x" />
+                  {/* <FontAwesomeIcon icon={faArrowTrendDown} size="2x" /> */}
+                  <span className="text-success">+5%</span>
                 </Col>
               </Row>
+            </Card.Body>
+          </Card>
+          <small>* Dibandingkan dengan bulan kemarin</small>
+        </Col>
+        <Col xl={3} md={6} className="my-1">
+          <Card className="shadow border-left-indigo">
+            <Card.Body>
+              <Row>
+                <Col xs={9}>
+                  <div className="text-lighter text-dark mb-1">
+                    Rata-Rata <strong>MA Grup</strong>
+                  </div>
+                  <h4 className="text-gray-800 mt-2">
+                    Rp <CountUp end={3500000} />
+                  </h4>
+                </Col>
+                <Col xs={3} className="text-danger text-end pt-3 ">
+                  {/* <FontAwesomeIcon icon={faArrowTrendUp} size="2x" /> */}
+                  <FontAwesomeIcon icon={faArrowTrendDown} size="2x" />
+                  <span className="text-danger">-5%</span>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+          <small>* Dibandingkan dengan bulan kemarin</small>
+        </Col>
+        <Col xl={3} md={6} className="my-1">
+          <Card className="shadow border-left-dark mb-1">
+            <Card.Body>
+              <Row>
+                <Col xs={9}>
+                  <div className="text-lighter text-dark mb-1">
+                    Total Transaksi
+                  </div>
+                  <h4 className="text-gray-800 mt-2">
+                    <CountUp end={350} />
+                  </h4>
+                </Col>
+                <Col
+                  xs={3}
+                  className="text-dark text-end pt-3"
+                  style={{ marginBottom: "20px" }}
+                >
+                  <FontAwesomeIcon icon={faReceipt} size="2x" />
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col xl={3} md={6} className="my-1">
+          <Card className="shadow border-left-success mb-1">
+            <Card.Body>
+              <Row>
+                <Col xs={9}>
+                  <div className="text-lighter text-dark mb-1">
+                    Total Produk
+                  </div>
+                  <h4 className="text-gray-800 mt-2">
+                    <CountUp end={304} />
+                  </h4>
+                </Col>
+                <Col
+                  xs={3}
+                  className="text-success text-end pt-3"
+                  style={{ marginBottom: "20px" }}
+                >
+                  <FontAwesomeIcon icon={faTable} size="2x" />
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Chart */}
+      <Row>
+        <Col md={6} className="my-2">
+          <Card className="shadow">
+            <Card.Header>
+              <h6 className="mb-0">Grafik Penjualan Grosir</h6>
+            </Card.Header>
+            <Card.Body>
+              <Line data={dataChartGrosir} />
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={6} className="my-2">
+          <Card className="shadow">
+            <Card.Header>
+              <h6 className="mb-0">Grafik Penjualan MA Grup</h6>
+            </Card.Header>
+            <Card.Body>
+              <Line data={dataChartMaGrup} />
             </Card.Body>
           </Card>
         </Col>

@@ -142,16 +142,16 @@ input::-webkit-inner-spin-button {
   border-left: 0.35rem solid var(--bs-primary) !important;
 }
 
-.border-left-info {
-  border-left: 0.35rem solid var(--bs-info) !important;
+.border-left-success {
+  border-left: 0.35rem solid var(--bs-success) !important;
 }
 
 .border-left-dark {
   border-left: 0.35rem solid var(--bs-dark) !important;
 }
 
-.border-left-blue {
-  border-left: 0.35rem solid var(--bs-blue) !important;
+.border-left-indigo {
+  border-left: 0.35rem solid var(--bs-indigo) !important;
 }
 
 .text-gray-300 {
