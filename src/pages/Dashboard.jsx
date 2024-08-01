@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Card, Row, Col, Dropdown, Button } from "react-bootstrap";
 import { format, addDays } from "date-fns";
 import { DateRangePicker } from "react-date-range";
@@ -18,8 +18,12 @@ import { FormatRupiah } from "@arismun/format-rupiah";
 import { Line } from "react-chartjs-2";
 import "chart.js/auto";
 import CountUp from "react-countup";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Dashboard() {
+  const API = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
   let tgl = moment().tz("Asia/Jakarta").format("dddd, MMMM Do YYYY");
   let jam = moment().tz("Asia/Jakarta").format("H:mm:ss");
   const [tanggal, setTanggal] = useState(tgl);
@@ -31,6 +35,51 @@ function Dashboard() {
     setWaktu(jam);
   };
   setInterval(UpdateTime);
+
+  const [labelGrosir, setLabelGrosir] = useState([]);
+  const [dataGrosir, setDataGrosir] = useState([]);
+  const [labelMagrup, setLabelMagrup] = useState([]);
+  const [dataMagrup, setDataMagrup] = useState([]);
+  const [avgGrosir, setAvgGrosir] = useState(0);
+  const [avgMagrup, setAvgMagrup] = useState(0);
+  const [jumlahTransaksi, setJumlahTransaksi] = useState(0);
+  const [jumlahProduk, setJumlahProduk] = useState(0);
+  const [diffGrosir, setDiffGrosir] = useState(0);
+  const [diffMagrup, setDiffMagrup] = useState(0);
+
+  const getDataGrosir = async (startDate, endDate) => {
+    try {
+      moment.locale("id");
+      const URL = API + "laporan";
+      const response = await axios.get(URL, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        let data = response.data.data;
+        let totalGrosir = data.reduce(function (prev, current) {
+          return prev + +parseInt(current.total);
+        }, 0);
+        let avg = totalGrosir / data.length;
+        setAvgGrosir(avg);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getDataGrosir(state[0].startDate, state[0].endDate);
+  }, []);
 
   const dataChartGrosir = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -60,8 +109,10 @@ function Dashboard() {
 
   const [state, setState] = useState([
     {
-      startDate: new Date(),
-      endDate: new Date(),
+      // startDate: new Date(),
+      // endDate: new Date(),
+      startDate: "2024-07-01",
+      endDate: "2024-07-31",
       key: "selection",
     },
   ]);
@@ -124,7 +175,7 @@ function Dashboard() {
                     Rata-Rata <strong>Grosir</strong>
                   </div>
                   <h4 className="text-gray-800 mt-2">
-                    Rp <CountUp end={3500000} />
+                    Rp <CountUp end={avgGrosir} />
                   </h4>
                 </Col>
                 <Col xs={3} className="text-success text-end pt-3 ">
@@ -165,7 +216,7 @@ function Dashboard() {
               <Row>
                 <Col xs={9}>
                   <div className="text-lighter text-dark mb-1">
-                    Total Transaksi
+                    Jumlah Transaksi
                   </div>
                   <h4 className="text-gray-800 mt-2">
                     <CountUp end={350} />
@@ -188,7 +239,7 @@ function Dashboard() {
               <Row>
                 <Col xs={9}>
                   <div className="text-lighter text-dark mb-1">
-                    Total Produk
+                    Jumlah Produk
                   </div>
                   <h4 className="text-gray-800 mt-2">
                     <CountUp end={304} />
