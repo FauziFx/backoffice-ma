@@ -517,7 +517,11 @@ function Dashboard() {
 
   return (
     <Container className="pt-4">
-      <h3>Dashboard</h3>
+      <div className="d-flex align-items-center p-3 my-3 text-white bg-primary shadow-sm">
+        <div className="lh-1">
+          <h4 className="mb-0 text-white lh-1">Dashboard</h4>
+        </div>
+      </div>
       <Row>
         <Col md={8}>
           <Calendar /> {tanggal}

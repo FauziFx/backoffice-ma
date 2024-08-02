@@ -10,6 +10,7 @@ import {
   Table,
   Badge,
   Modal,
+  Card,
 } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
 import { Search, XCircleFill, Trash3Fill } from "react-bootstrap-icons";
@@ -321,7 +322,7 @@ function DataProduk() {
       if (varianBaru[0].nama_varian_baru != "") {
         varianBaru.map((item, i) => {
           const partialObj = {};
-          partialObj.nama=produkDetail.nama_produk.split("(")[0]
+          partialObj.nama = produkDetail.nama_produk.split("(")[0];
           partialObj.nama_varian = item.nama_varian_baru;
           partialObj.stok = item.stok_baru;
           partialObj.stok_minimum = item.stok_minimum_baru;
@@ -405,13 +406,13 @@ function DataProduk() {
 
   return (
     <Container className="pt-4">
-      <Row>
-        <Col>
-          <h3>Produk</h3>
+      <Row className="p-2 text-white bg-primary shadow-sm mx-1">
+        <Col className="pt-1">
+          <h4 className="mb-0">Produk</h4>
         </Col>
         <Col className="d-none d-sm-none d-md-block">
           <span className="float-end">
-            <Dropdown className="btn-group me-1" role="group">
+            {/* <Dropdown className="btn-group me-1" role="group">
               <Dropdown.Toggle variant="primary" id="dropdown-basic">
                 Import / Export
               </Dropdown.Toggle>
@@ -420,7 +421,7 @@ function DataProduk() {
                 <Dropdown.Item href="#/action-1">Import Data</Dropdown.Item>
                 <Dropdown.Item href="#/action-2">Export Data</Dropdown.Item>
               </Dropdown.Menu>
-            </Dropdown>
+            </Dropdown> */}
             <Button onClick={() => handleShowTambah()}>Tambah Produk</Button>
           </span>
         </Col>
@@ -459,30 +460,37 @@ function DataProduk() {
               </InputGroup>
             </Col>
           </Row>
-          <LoadingOverlay active={loadingDataProduk} spinner={<PulseLoader />}>
-            <Table hover size="md" responsive className="mt-2 table-fixed">
-              <thead>
-                <tr>
-                  <th className="p-2 bg-light">Nama</th>
-                  <th className="p-2 bg-light">Kategori</th>
-                  <th className="p-2 bg-light">Stok</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dataProduk.map((item, index) => (
-                  <tr key={index} onClick={() => handleClickRow(item.id)}>
-                    <td>{item.nama_produk}</td>
-                    <td>{item.nama_kategori}</td>
-                    <td>
-                      <Badge bg={item.stok < 1 ? "warning" : "success"}>
-                        Stok :{item.stok}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </LoadingOverlay>
+          <Card className="mt-1">
+            <Card.Body>
+              <LoadingOverlay
+                active={loadingDataProduk}
+                spinner={<PulseLoader />}
+              >
+                <Table hover size="md" responsive className="mt-2 table-fixed">
+                  <thead>
+                    <tr>
+                      <th className="p-2 bg-light">Nama</th>
+                      <th className="p-2 bg-light">Kategori</th>
+                      <th className="p-2 bg-light">Stok</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dataProduk.map((item, index) => (
+                      <tr key={index} onClick={() => handleClickRow(item.id)}>
+                        <td>{item.nama_produk}</td>
+                        <td>{item.nama_kategori}</td>
+                        <td>
+                          <Badge bg={item.stok < 1 ? "warning" : "success"}>
+                            Stok :{item.stok}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </LoadingOverlay>
+            </Card.Body>
+          </Card>
         </Col>
         <Col md={6} className={showTambah ? "d-block" : "d-none"}>
           <TambahProduk
@@ -501,286 +509,305 @@ function DataProduk() {
                 <Col
                   md={12}
                   sm={12}
-                  className="overflow-y-scroll"
+                  className="overflow-y-scroll px-0"
                   style={{ height: "550px" }}
                 >
-                  <small className="mb-0">Informasi Produk</small>
-                  <hr style={{ margin: 0 }} />
-                  <Form
-                    className="mt-2"
-                    id="form-detail"
-                    onSubmit={handleSubmit}
-                  >
-                    <Form.Group as={Row} className="mb-2">
-                      <Form.Label column sm={3}>
-                        Nama Produk <i className="text-danger">*</i>
-                      </Form.Label>
-                      <Col sm={9}>
-                        <Form.Control
-                          type="text"
-                          name="nama_produk"
-                          placeholder="Nama Produk"
-                          value={produkDetail.nama_produk}
-                          onChange={(e) => handleChangeProduk(e)}
-                          required
-                        />
-                      </Col>
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3">
-                      <Form.Label column sm={3}>
-                        Kategori
-                      </Form.Label>
-                      <Col sm={9}>
-                        <Form.Select
-                          aria-label="Default select example"
-                          name="id_kategori"
-                          value={produkDetail.id_kategori}
-                          onChange={(e) => handleChangeProduk(e)}
-                        >
-                          <option value="">Uncategorized</option>
-                          {dataKategori.map((item, index) => (
-                            <option key={index} value={item.id}>
-                              {item.nama_kategori}
-                            </option>
-                          ))}
-                        </Form.Select>
-                      </Col>
-                    </Form.Group>
-
-                    <small className="mb-0">Varian Produk</small>
-                    <hr style={{ margin: 0 }} />
-
-                    <Button
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => handleAddVarianBaru()}
-                    >
-                      Tambah Varian
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="success"
-                      className="mt-2 ms-2"
-                      onClick={() => handleShow()}
-                    >
-                      Track Stok
-                    </Button>
-                    <Row className="mt-2 fw-semibold">
-                      <Col sm={8}>Nama Varian</Col>
-                      <Col sm={3}>Harga</Col>
-                    </Row>
-                    <div className="pt-3 pb-3">
-                      {produkDetail.varian.map((item, index) => (
-                        <Row key={index}>
-                          <Col sm={8} className="pe-0">
+                  <Card className="mt-1">
+                    <Card.Body>
+                      <small className="mb-0">Informasi Produk</small>
+                      <hr style={{ margin: 0 }} />
+                      <Form
+                        className="mt-2"
+                        id="form-detail"
+                        onSubmit={handleSubmit}
+                      >
+                        <Form.Group as={Row} className="mb-2">
+                          <Form.Label column sm={3}>
+                            Nama Produk <i className="text-danger">*</i>
+                          </Form.Label>
+                          <Col sm={9}>
                             <Form.Control
-                              name="nama_varian"
                               type="text"
-                              value={item.nama_varian}
-                              onChange={(event) =>
-                                handleChangeVarian(event, index)
-                              }
-                              placeholder="Nama Varian"
+                              name="nama_produk"
+                              placeholder="Nama Produk"
+                              value={produkDetail.nama_produk}
+                              onChange={(e) => handleChangeProduk(e)}
                               required
                             />
                           </Col>
-                          <Col sm={3} className="px-0">
-                            <Form.Control
-                              name="harga"
-                              type="number"
-                              value={item.harga}
-                              onChange={(event) =>
-                                handleChangeVarian(event, index)
-                              }
-                              placeholder="Harga"
-                              required
-                            />
-                          </Col>
-                          <Col sm={1} className="ps-0 pt-1">
-                            {produkDetail.varian.length > 1 && (
-                              <Button
-                                size="sm"
-                                variant="light"
-                                className="text-danger pt-0"
-                                onClick={() =>
-                                  handleDeleteVarian(index, item.id)
-                                }
-                              >
-                                <XCircleFill />
-                              </Button>
-                            )}
-                          </Col>
-                        </Row>
-                      ))}
-                      {showVarianBaru &&
-                        varianBaru.map((item, index) => (
-                          <Row key={index}>
-                            <Col sm={8} className="pe-0">
-                              <Form.Control
-                                name="nama_varian_baru"
-                                type="text"
-                                value={item.nama_varian_baru}
-                                onChange={(event) =>
-                                  handleChangeVarianBaru(event, index)
-                                }
-                                placeholder="Nama Varian"
-                                required
-                              />
-                            </Col>
-                            <Col sm={3} className="px-0">
-                              <Form.Control
-                                name="harga_baru"
-                                type="number"
-                                value={item.harga_baru}
-                                onChange={(event) =>
-                                  handleChangeVarianBaru(event, index)
-                                }
-                                placeholder="Harga"
-                                required
-                              />
-                            </Col>
-                            <Col sm={1} className="ps-0 pt-1">
-                              <Button
-                                size="sm"
-                                variant="light"
-                                className="text-danger pt-0"
-                                onClick={() => handleDeleteVarianbaru(index)}
-                              >
-                                <XCircleFill />
-                              </Button>
-                            </Col>
-                          </Row>
-                        ))}
-                    </div>
-
-                    {/* Modal */}
-                    <Modal show={showTracking} onHide={handleClose} scrollable>
-                      <Modal.Header closeButton className="bg-primary">
-                        <Modal.Title className="text-light">
-                          Tracking Stok
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body className="pt-1">
-                        <Row className="fw-semibold mb-1 bg-grey py-2">
-                          <Col sm={5}>Nama Varian</Col>
-                          <Col sm={2}>Stok</Col>
-                          <Col sm={2}>Alert</Col>
-                          <Col sm={3}>Track Stok</Col>
-                        </Row>
-                        {produkDetail.varian.map((item, index) => (
-                          <Row
-                            key={index}
-                            style={{ borderBottom: "solid 1px #d6d9dc" }}
-                            className="pb-1 mb-1"
-                          >
-                            <Col sm={5} className="pe-0 pt-2">
-                              <p className="mb-0">{item.nama_varian}</p>
-                            </Col>
-                            <Col sm={2} className="px-0">
-                              <Form.Control
-                                name="stok"
-                                type="number"
-                                style={{ cursor: "not-allowed" }}
-                                value={item.stok}
-                                onChange={(event) =>
-                                  handleChangeVarian(event, index)
-                                }
-                                placeholder=""
-                                className="bg-grey"
-                                disabled
-                              />
-                            </Col>
-                            <Col sm={2} className="px-0">
-                              <Form.Control
-                                name="stok_minimum"
-                                type="number"
-                                value={item.stok_minimum}
-                                onChange={(event) =>
-                                  handleChangeVarian(event, index)
-                                }
-                              />
-                            </Col>
-                            <Col sm={3} className="pt-2 ps-4">
-                              <input
-                                className="form-check-input"
-                                type="checkbox"
-                                name="languages"
-                                checked={item.track_stok === "y" ? true : false}
-                                value="Javascript"
-                                id="flexCheckDefault"
-                                onChange={(event) =>
-                                  handleChangeCheck(event, index)
-                                }
-                              />
-                            </Col>
-                          </Row>
-                        ))}
-                        {showVarianBaru &&
-                          varianBaru.map((item, index) => (
-                            <Row
-                              key={index}
-                              style={{ borderBottom: "solid 1px #d6d9dc" }}
-                              className="pb-1 mb-1"
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3">
+                          <Form.Label column sm={3}>
+                            Kategori
+                          </Form.Label>
+                          <Col sm={9}>
+                            <Form.Select
+                              aria-label="Default select example"
+                              name="id_kategori"
+                              value={produkDetail.id_kategori}
+                              onChange={(e) => handleChangeProduk(e)}
                             >
-                              <Col sm={5} className="pe-0 pt-2">
-                                <p className="mb-0">{item.nama_varian_baru}</p>
-                              </Col>
-                              <Col sm={2} className="px-0">
+                              <option value="">Uncategorized</option>
+                              {dataKategori.map((item, index) => (
+                                <option key={index} value={item.id}>
+                                  {item.nama_kategori}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          </Col>
+                        </Form.Group>
+
+                        <small className="mb-0">Varian Produk</small>
+                        <hr style={{ margin: 0 }} />
+
+                        <Button
+                          size="sm"
+                          className="mt-2"
+                          onClick={() => handleAddVarianBaru()}
+                        >
+                          Tambah Varian
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="success"
+                          className="mt-2 ms-2"
+                          onClick={() => handleShow()}
+                        >
+                          Track Stok
+                        </Button>
+                        <Row className="mt-2 fw-semibold">
+                          <Col sm={8}>Nama Varian</Col>
+                          <Col sm={3}>Harga</Col>
+                        </Row>
+                        <div className="pt-3 pb-3">
+                          {produkDetail.varian.map((item, index) => (
+                            <Row key={index}>
+                              <Col sm={8} className="pe-0">
                                 <Form.Control
-                                  name="stok_baru"
-                                  type="number"
-                                  style={{ cursor: "not-allowed" }}
-                                  value={item.stok_baru}
+                                  name="nama_varian"
+                                  type="text"
+                                  value={item.nama_varian}
                                   onChange={(event) =>
-                                    handleChangeVarianBaru(event, index)
+                                    handleChangeVarian(event, index)
                                   }
-                                  placeholder=""
-                                  className="bg-grey"
-                                  disabled
+                                  placeholder="Nama Varian"
+                                  required
                                 />
                               </Col>
-                              <Col sm={2} className="px-0">
+                              <Col sm={3} className="px-0">
                                 <Form.Control
-                                  name="stok_minimum_baru"
+                                  name="harga"
                                   type="number"
-                                  value={item.stok_minimum_baru}
+                                  value={item.harga}
                                   onChange={(event) =>
-                                    handleChangeVarianBaru(event, index)
+                                    handleChangeVarian(event, index)
                                   }
+                                  placeholder="Harga"
+                                  required
                                 />
                               </Col>
-                              <Col sm={3} className="pt-2 ps-4">
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  name="languages"
-                                  checked={
-                                    item.track_stok_baru === "y" ? true : false
-                                  }
-                                  value="Javascript"
-                                  id="flexCheckDefault"
-                                  onChange={(event) =>
-                                    handleChangeCheckVarianBaru(event, index)
-                                  }
-                                />
+                              <Col sm={1} className="ps-0 pt-1">
+                                {produkDetail.varian.length > 1 && (
+                                  <Button
+                                    size="sm"
+                                    variant="light"
+                                    className="text-danger pt-0"
+                                    onClick={() =>
+                                      handleDeleteVarian(index, item.id)
+                                    }
+                                  >
+                                    <XCircleFill />
+                                  </Button>
+                                )}
                               </Col>
                             </Row>
                           ))}
-                      </Modal.Body>
-                      <Modal.Footer className="justify-content-between">
-                        <small className="fw-light">
-                          Gunakan *
-                          <Link to="/produk/penyesuaian-stok">
-                            Penyesuaian stok&nbsp;
-                          </Link>
-                          Untuk mengelola stok
-                        </small>
-                        <Button onClick={() => handleClose()}>
-                          Konfirmasi
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                  </Form>
+                          {showVarianBaru &&
+                            varianBaru.map((item, index) => (
+                              <Row key={index}>
+                                <Col sm={8} className="pe-0">
+                                  <Form.Control
+                                    name="nama_varian_baru"
+                                    type="text"
+                                    value={item.nama_varian_baru}
+                                    onChange={(event) =>
+                                      handleChangeVarianBaru(event, index)
+                                    }
+                                    placeholder="Nama Varian"
+                                    required
+                                  />
+                                </Col>
+                                <Col sm={3} className="px-0">
+                                  <Form.Control
+                                    name="harga_baru"
+                                    type="number"
+                                    value={item.harga_baru}
+                                    onChange={(event) =>
+                                      handleChangeVarianBaru(event, index)
+                                    }
+                                    placeholder="Harga"
+                                    required
+                                  />
+                                </Col>
+                                <Col sm={1} className="ps-0 pt-1">
+                                  <Button
+                                    size="sm"
+                                    variant="light"
+                                    className="text-danger pt-0"
+                                    onClick={() =>
+                                      handleDeleteVarianbaru(index)
+                                    }
+                                  >
+                                    <XCircleFill />
+                                  </Button>
+                                </Col>
+                              </Row>
+                            ))}
+                        </div>
+
+                        {/* Modal */}
+                        <Modal
+                          show={showTracking}
+                          onHide={handleClose}
+                          scrollable
+                        >
+                          <Modal.Header closeButton className="bg-primary">
+                            <Modal.Title className="text-light">
+                              Tracking Stok
+                            </Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body className="pt-1">
+                            <Row className="fw-semibold mb-1 bg-grey py-2">
+                              <Col sm={5}>Nama Varian</Col>
+                              <Col sm={2}>Stok</Col>
+                              <Col sm={2}>Alert</Col>
+                              <Col sm={3}>Track Stok</Col>
+                            </Row>
+                            {produkDetail.varian.map((item, index) => (
+                              <Row
+                                key={index}
+                                style={{ borderBottom: "solid 1px #d6d9dc" }}
+                                className="pb-1 mb-1"
+                              >
+                                <Col sm={5} className="pe-0 pt-2">
+                                  <p className="mb-0">{item.nama_varian}</p>
+                                </Col>
+                                <Col sm={2} className="px-0">
+                                  <Form.Control
+                                    name="stok"
+                                    type="number"
+                                    style={{ cursor: "not-allowed" }}
+                                    value={item.stok}
+                                    onChange={(event) =>
+                                      handleChangeVarian(event, index)
+                                    }
+                                    placeholder=""
+                                    className="bg-grey"
+                                    disabled
+                                  />
+                                </Col>
+                                <Col sm={2} className="px-0">
+                                  <Form.Control
+                                    name="stok_minimum"
+                                    type="number"
+                                    value={item.stok_minimum}
+                                    onChange={(event) =>
+                                      handleChangeVarian(event, index)
+                                    }
+                                  />
+                                </Col>
+                                <Col sm={3} className="pt-2 ps-4">
+                                  <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name="languages"
+                                    checked={
+                                      item.track_stok === "y" ? true : false
+                                    }
+                                    value="Javascript"
+                                    id="flexCheckDefault"
+                                    onChange={(event) =>
+                                      handleChangeCheck(event, index)
+                                    }
+                                  />
+                                </Col>
+                              </Row>
+                            ))}
+                            {showVarianBaru &&
+                              varianBaru.map((item, index) => (
+                                <Row
+                                  key={index}
+                                  style={{ borderBottom: "solid 1px #d6d9dc" }}
+                                  className="pb-1 mb-1"
+                                >
+                                  <Col sm={5} className="pe-0 pt-2">
+                                    <p className="mb-0">
+                                      {item.nama_varian_baru}
+                                    </p>
+                                  </Col>
+                                  <Col sm={2} className="px-0">
+                                    <Form.Control
+                                      name="stok_baru"
+                                      type="number"
+                                      style={{ cursor: "not-allowed" }}
+                                      value={item.stok_baru}
+                                      onChange={(event) =>
+                                        handleChangeVarianBaru(event, index)
+                                      }
+                                      placeholder=""
+                                      className="bg-grey"
+                                      disabled
+                                    />
+                                  </Col>
+                                  <Col sm={2} className="px-0">
+                                    <Form.Control
+                                      name="stok_minimum_baru"
+                                      type="number"
+                                      value={item.stok_minimum_baru}
+                                      onChange={(event) =>
+                                        handleChangeVarianBaru(event, index)
+                                      }
+                                    />
+                                  </Col>
+                                  <Col sm={3} className="pt-2 ps-4">
+                                    <input
+                                      className="form-check-input"
+                                      type="checkbox"
+                                      name="languages"
+                                      checked={
+                                        item.track_stok_baru === "y"
+                                          ? true
+                                          : false
+                                      }
+                                      value="Javascript"
+                                      id="flexCheckDefault"
+                                      onChange={(event) =>
+                                        handleChangeCheckVarianBaru(
+                                          event,
+                                          index
+                                        )
+                                      }
+                                    />
+                                  </Col>
+                                </Row>
+                              ))}
+                          </Modal.Body>
+                          <Modal.Footer className="justify-content-between">
+                            <small className="fw-light">
+                              Gunakan *
+                              <Link to="/produk/penyesuaian-stok">
+                                Penyesuaian stok&nbsp;
+                              </Link>
+                              Untuk mengelola stok
+                            </small>
+                            <Button onClick={() => handleClose()}>
+                              Konfirmasi
+                            </Button>
+                          </Modal.Footer>
+                        </Modal>
+                      </Form>
+                    </Card.Body>
+                  </Card>
                 </Col>
               </Row>
               <div className="d-flex justify-content-between">

@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Button, Form, Modal } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Form,
+  Modal,
+  Card,
+} from "react-bootstrap";
 import { XCircleFill } from "react-bootstrap-icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -151,199 +159,213 @@ function TambahProduk({ closeButton, dataKategori, getDataProduk }) {
           <Col
             md={12}
             sm={12}
-            className="overflow-y-scroll"
+            className="overflow-y-scroll px-0"
             style={{ height: "550px" }}
           >
-            <small className="mb-0">Informasi Produk</small>
-            <hr style={{ margin: 0 }} />
-            <Form className="mt-2" id="form-tambah" onSubmit={handleSubmit}>
-              <Form.Group as={Row} className="mb-2">
-                <Form.Label column sm={3}>
-                  Nama Produk <i className="text-danger">*</i>
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control
-                    type="text"
-                    placeholder="Nama Produk"
-                    name="nama_produk"
-                    required
-                    value={dataProduk.nama_produk}
-                    onChange={(e) => handleChangeProduk(e)}
-                  />
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={3}>
-                  Kategori
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Select
-                    aria-label="Default select example"
-                    name="id_kategori"
-                    value={dataProduk.id_kategori}
-                    onChange={(e) => handleChangeProduk(e)}
-                  >
-                    <option value="">Uncategorized</option>
-                    {dataKategori.map((item, index) => (
-                      <option key={index} value={item.id}>
-                        {item.nama_kategori}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Col>
-              </Form.Group>
-
-              <small className="mb-0">Varian Produk</small>
-              <hr style={{ margin: 0 }} />
-
-              <Button
-                size="sm"
-                className="mt-2"
-                onClick={() => handleAddInput()}
-              >
-                Tambah Varian
-              </Button>
-              <Button
-                size="sm"
-                variant="success"
-                className="mt-2 ms-2"
-                onClick={() => handleShow()}
-              >
-                Track Stok
-              </Button>
-              <Row className="mt-2 fw-semibold">
-                <Col sm={8}>Nama Varian</Col>
-                <Col sm={3}>Harga</Col>
-              </Row>
-              <div className="pt-3 pb-3">
-                {varianInputs.map((item, index) => (
-                  <Row key={index}>
-                    <Col sm={8} className="pe-0">
+            <Card className="mt-1">
+              <Card.Body>
+                <small className="mb-0">Informasi Produk</small>
+                <hr style={{ margin: 0 }} />
+                <Form className="mt-2" id="form-tambah" onSubmit={handleSubmit}>
+                  <Form.Group as={Row} className="mb-2">
+                    <Form.Label column sm={3}>
+                      Nama Produk <i className="text-danger">*</i>
+                    </Form.Label>
+                    <Col sm={9}>
                       <Form.Control
-                        name="nama_varian"
                         type="text"
-                        value={item.nama_varian}
-                        onChange={(event) => handleChangeVarian(event, index)}
-                        placeholder="Nama Varian"
+                        placeholder="Nama Produk"
+                        name="nama_produk"
                         required
+                        value={dataProduk.nama_produk}
+                        onChange={(e) => handleChangeProduk(e)}
                       />
                     </Col>
-                    <Col sm={3} className="px-0">
-                      <Form.Control
-                        name="harga"
-                        type="number"
-                        value={item.harga}
-                        onChange={(event) => handleChangeVarian(event, index)}
-                        placeholder="Harga"
-                        required
-                        onFocus={(e) =>
-                          e.target.addEventListener(
-                            "wheel",
-                            function (e) {
-                              e.preventDefault();
-                            },
-                            { passive: false }
-                          )
-                        }
-                      />
+                  </Form.Group>
+                  <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm={3}>
+                      Kategori
+                    </Form.Label>
+                    <Col sm={9}>
+                      <Form.Select
+                        aria-label="Default select example"
+                        name="id_kategori"
+                        value={dataProduk.id_kategori}
+                        onChange={(e) => handleChangeProduk(e)}
+                      >
+                        <option value="">Uncategorized</option>
+                        {dataKategori.map((item, index) => (
+                          <option key={index} value={item.id}>
+                            {item.nama_kategori}
+                          </option>
+                        ))}
+                      </Form.Select>
                     </Col>
-                    <Col sm={1} className="ps-0 pt-1">
-                      {varianInputs.length > 1 && (
-                        <Button
-                          size="sm"
-                          variant="light"
-                          className="text-danger pt-0"
-                          onClick={() => handleDeleteInput(index)}
-                        >
-                          <XCircleFill />
-                        </Button>
-                      )}
-                    </Col>
-                  </Row>
-                ))}
-              </div>
+                  </Form.Group>
 
-              {/* <div className="body"> {JSON.stringify(varianInputs)} </div> */}
-              {/* Modal */}
-              <Modal show={showTracking} onHide={handleClose} scrollable>
-                <Modal.Header closeButton className="bg-primary">
-                  <Modal.Title className="text-light">
-                    Tracking Stok
-                  </Modal.Title>
-                </Modal.Header>
-                <Modal.Body className="pt-1">
-                  <Row className="fw-semibold mb-1 bg-grey py-2">
-                    <Col sm={5}>Nama Varian</Col>
-                    <Col sm={2}>Stok</Col>
-                    <Col sm={2}>Alert</Col>
-                    <Col sm={3}>Track Stok</Col>
-                  </Row>
-                  {varianInputs.map((item, index) => (
-                    <Row
-                      key={index}
-                      style={{ borderBottom: "solid 1px #d6d9dc" }}
-                      className="pb-1 mb-1"
-                    >
-                      <Col sm={5} className="pe-0 pt-2">
-                        <p className="mb-0">{item.nama_varian}</p>
-                      </Col>
-                      <Col sm={2} className="px-0">
-                        <Form.Control
-                          name="stok"
-                          type="number"
-                          value={item.stok}
-                          onChange={(event) => handleChangeVarian(event, index)}
-                          placeholder=""
-                          onFocus={(e) =>
-                            e.target.addEventListener(
-                              "wheel",
-                              function (e) {
-                                e.preventDefault();
-                              },
-                              { passive: false }
-                            )
-                          }
-                        />
-                      </Col>
-                      <Col sm={2} className="px-0">
-                        <Form.Control
-                          name="stok_minimum"
-                          type="number"
-                          value={item.stok_minimum}
-                          onChange={(event) => handleChangeVarian(event, index)}
-                          onFocus={(e) =>
-                            e.target.addEventListener(
-                              "wheel",
-                              function (e) {
-                                e.preventDefault();
-                              },
-                              { passive: false }
-                            )
-                          }
-                        />
-                      </Col>
-                      <Col sm={3} className="pt-2 ps-4">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          name="languages"
-                          checked={item.track_stok === "y" ? true : false}
-                          value="Javascript"
-                          id="flexCheckDefault"
-                          onChange={(event) => handleChangeCheck(event, index)}
-                        />
-                      </Col>
-                    </Row>
-                  ))}
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={() => handleClose()}>
-                    Tutup
+                  <small className="mb-0">Varian Produk</small>
+                  <hr style={{ margin: 0 }} />
+
+                  <Button
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => handleAddInput()}
+                  >
+                    Tambah Varian
                   </Button>
-                  <Button onClick={() => handleClose()}>Konfirmasi</Button>
-                </Modal.Footer>
-              </Modal>
-            </Form>
+                  <Button
+                    size="sm"
+                    variant="success"
+                    className="mt-2 ms-2"
+                    onClick={() => handleShow()}
+                  >
+                    Track Stok
+                  </Button>
+                  <Row className="mt-2 fw-semibold">
+                    <Col sm={8}>Nama Varian</Col>
+                    <Col sm={3}>Harga</Col>
+                  </Row>
+                  <div className="pt-3 pb-3">
+                    {varianInputs.map((item, index) => (
+                      <Row key={index}>
+                        <Col sm={8} className="pe-0">
+                          <Form.Control
+                            name="nama_varian"
+                            type="text"
+                            value={item.nama_varian}
+                            onChange={(event) =>
+                              handleChangeVarian(event, index)
+                            }
+                            placeholder="Nama Varian"
+                            required
+                          />
+                        </Col>
+                        <Col sm={3} className="px-0">
+                          <Form.Control
+                            name="harga"
+                            type="number"
+                            value={item.harga}
+                            onChange={(event) =>
+                              handleChangeVarian(event, index)
+                            }
+                            placeholder="Harga"
+                            required
+                            onFocus={(e) =>
+                              e.target.addEventListener(
+                                "wheel",
+                                function (e) {
+                                  e.preventDefault();
+                                },
+                                { passive: false }
+                              )
+                            }
+                          />
+                        </Col>
+                        <Col sm={1} className="ps-0 pt-1">
+                          {varianInputs.length > 1 && (
+                            <Button
+                              size="sm"
+                              variant="light"
+                              className="text-danger pt-0"
+                              onClick={() => handleDeleteInput(index)}
+                            >
+                              <XCircleFill />
+                            </Button>
+                          )}
+                        </Col>
+                      </Row>
+                    ))}
+                  </div>
+
+                  {/* <div className="body"> {JSON.stringify(varianInputs)} </div> */}
+                  {/* Modal */}
+                  <Modal show={showTracking} onHide={handleClose} scrollable>
+                    <Modal.Header closeButton className="bg-primary">
+                      <Modal.Title className="text-light">
+                        Tracking Stok
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body className="pt-1">
+                      <Row className="fw-semibold mb-1 bg-grey py-2">
+                        <Col sm={5}>Nama Varian</Col>
+                        <Col sm={2}>Stok</Col>
+                        <Col sm={2}>Alert</Col>
+                        <Col sm={3}>Track Stok</Col>
+                      </Row>
+                      {varianInputs.map((item, index) => (
+                        <Row
+                          key={index}
+                          style={{ borderBottom: "solid 1px #d6d9dc" }}
+                          className="pb-1 mb-1"
+                        >
+                          <Col sm={5} className="pe-0 pt-2">
+                            <p className="mb-0">{item.nama_varian}</p>
+                          </Col>
+                          <Col sm={2} className="px-0">
+                            <Form.Control
+                              name="stok"
+                              type="number"
+                              value={item.stok}
+                              onChange={(event) =>
+                                handleChangeVarian(event, index)
+                              }
+                              placeholder=""
+                              onFocus={(e) =>
+                                e.target.addEventListener(
+                                  "wheel",
+                                  function (e) {
+                                    e.preventDefault();
+                                  },
+                                  { passive: false }
+                                )
+                              }
+                            />
+                          </Col>
+                          <Col sm={2} className="px-0">
+                            <Form.Control
+                              name="stok_minimum"
+                              type="number"
+                              value={item.stok_minimum}
+                              onChange={(event) =>
+                                handleChangeVarian(event, index)
+                              }
+                              onFocus={(e) =>
+                                e.target.addEventListener(
+                                  "wheel",
+                                  function (e) {
+                                    e.preventDefault();
+                                  },
+                                  { passive: false }
+                                )
+                              }
+                            />
+                          </Col>
+                          <Col sm={3} className="pt-2 ps-4">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              name="languages"
+                              checked={item.track_stok === "y" ? true : false}
+                              value="Javascript"
+                              id="flexCheckDefault"
+                              onChange={(event) =>
+                                handleChangeCheck(event, index)
+                              }
+                            />
+                          </Col>
+                        </Row>
+                      ))}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={() => handleClose()}>
+                        Tutup
+                      </Button>
+                      <Button onClick={() => handleClose()}>Konfirmasi</Button>
+                    </Modal.Footer>
+                  </Modal>
+                </Form>
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
         <Button type="submit" form="form-tambah" className="float-end my-2">
