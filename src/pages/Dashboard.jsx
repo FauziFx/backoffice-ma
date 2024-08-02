@@ -13,6 +13,7 @@ import {
   faStore,
   faReceipt,
   faTable,
+  faGlasses,
 } from "@fortawesome/free-solid-svg-icons";
 import { FormatRupiah } from "@arismun/format-rupiah";
 import { Line } from "react-chartjs-2";
@@ -29,7 +30,7 @@ function Dashboard() {
   const [tanggal, setTanggal] = useState(tgl);
   const [waktu, setWaktu] = useState(jam);
   const UpdateTime = () => {
-    tgl = moment().tz("Asia/Jakarta").format("dddd, MMMM Do YYYY");
+    tgl = moment().tz("Asia/Jakarta").format("dddd, Do MMMM YYYY");
     jam = moment().tz("Asia/Jakarta").format("H:mm:ss");
     setTanggal(tgl);
     setWaktu(jam);
@@ -40,21 +41,40 @@ function Dashboard() {
   const [dataGrosir, setDataGrosir] = useState([]);
   const [labelMagrup, setLabelMagrup] = useState([]);
   const [dataMagrup, setDataMagrup] = useState([]);
-  const [avgGrosir, setAvgGrosir] = useState(0);
-  const [avgMagrup, setAvgMagrup] = useState(0);
+  const [avgGrosir, setAvgGrosir] = useState("");
+  const [avgMagrup, setAvgMagrup] = useState("");
   const [jumlahTransaksi, setJumlahTransaksi] = useState(0);
-  const [jumlahProduk, setJumlahProduk] = useState(0);
+  const [totalEceran, setTotalEceran] = useState(0);
   const [diffGrosir, setDiffGrosir] = useState(0);
   const [diffMagrup, setDiffMagrup] = useState(0);
 
   const getDataGrosir = async (startDate, endDate) => {
     try {
       moment.locale("id");
-      const URL = API + "laporan";
+      const URL = API + "laporan/transaksi";
+      let avgLast, avgNow;
+
+      const firstDateInMs = startDate.getTime();
+      const secondDateInMs = endDate.getTime();
+
+      const differenceBtwDates = secondDateInMs - firstDateInMs;
+
+      const aDayInMs = 24 * 60 * 60 * 1000;
+
+      const daysDiff = Math.round(differenceBtwDates / aDayInMs);
+
+      const end_dateLM = moment(startDate)
+        .subtract(1, "days")
+        .format("YYYY-MM-DD");
+      const start_dateLM = moment(end_dateLM)
+        .subtract(daysDiff, "days")
+        .format("YYYY-MM-DD");
+
       const response = await axios.get(URL, {
         params: {
           start_date: moment(startDate).format("YYYY-MM-DD"),
           end_date: moment(endDate).format("YYYY-MM-DD"),
+          jenis_transaksi: "umum",
         },
         headers: {
           Authorization: localStorage.getItem("user-token"),
@@ -65,13 +85,133 @@ function Dashboard() {
         localStorage.clear();
         return navigate("/login");
       } else {
-        let data = response.data.data;
+        let data = response.data.data.reverse();
         let totalGrosir = data.reduce(function (prev, current) {
           return prev + +parseInt(current.total);
         }, 0);
         let avg = totalGrosir / data.length;
         setAvgGrosir(avg);
+        avgNow = avg;
+
+        let labelArr = data.map((item) =>
+          moment(item.tanggal).tz("Asia/Jakarta").format("Do-MMM-YY")
+        );
+        let dataArr = data.map((item) => item.total);
+        setLabelGrosir(labelArr);
+        setDataGrosir(dataArr);
       }
+
+      const lastMonth = await axios.get(URL, {
+        params: {
+          start_date: start_dateLM,
+          end_date: end_dateLM,
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+
+      if (lastMonth.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        let data = lastMonth.data.data;
+        let totalGrosir = data.reduce(function (prev, current) {
+          return prev + +parseInt(current.total);
+        }, 0);
+        let avg = totalGrosir / data.length;
+        avgLast = avg;
+      }
+
+      const percentageChange = (last, now) => (now / last) * 100 - 100 || 0;
+
+      let diff = percentageChange(avgLast, avgNow).toFixed(2) + "%";
+      setDiffGrosir(diff);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getDataMagrup = async (startDate, endDate) => {
+    try {
+      moment.locale("id");
+      const URL = API + "laporan/transaksi";
+      let avgLast, avgNow;
+
+      const firstDateInMs = startDate.getTime();
+      const secondDateInMs = endDate.getTime();
+
+      const differenceBtwDates = secondDateInMs - firstDateInMs;
+
+      const aDayInMs = 24 * 60 * 60 * 1000;
+
+      const daysDiff = Math.round(differenceBtwDates / aDayInMs);
+
+      const end_dateLM = moment(startDate)
+        .subtract(1, "days")
+        .format("YYYY-MM-DD");
+      const start_dateLM = moment(end_dateLM)
+        .subtract(daysDiff, "days")
+        .format("YYYY-MM-DD");
+
+      const response = await axios.get(URL, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+          jenis_transaksi: "magrup",
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        let data = response.data.data.reverse();
+
+        let totalMagrup = data.reduce(function (prev, current) {
+          return prev + +parseInt(current.total);
+        }, 0);
+        let avg = totalMagrup / data.length;
+        setAvgMagrup(avg);
+        avgNow = avg;
+
+        let labelArr = data.map((item) =>
+          moment(item.tanggal).tz("Asia/Jakarta").format("Do-MMM-YY")
+        );
+        let dataArr = data.map((item) => item.total);
+        setLabelMagrup(labelArr);
+        setDataMagrup(dataArr);
+      }
+
+      const lastMonth = await axios.get(URL, {
+        params: {
+          start_date: start_dateLM,
+          end_date: end_dateLM,
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+
+      if (lastMonth.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        let data = lastMonth.data.data;
+        let totalMagrup = data.reduce(function (prev, current) {
+          return prev + +parseInt(current.total);
+        }, 0);
+        let avg = totalMagrup / data.length;
+        avgLast = avg;
+      }
+
+      const percentageChange = (last, now) => (now / last) * 100 - 100 || 0;
+
+      let diff = percentageChange(avgLast, avgNow).toFixed(2) + "%";
+      setDiffMagrup(diff);
     } catch (error) {
       console.log(error);
     }
@@ -79,14 +219,20 @@ function Dashboard() {
 
   useEffect(() => {
     getDataGrosir(state[0].startDate, state[0].endDate);
+    getDataMagrup(state[0].startDate, state[0].endDate);
   }, []);
 
+  const handleFilterTanggal = () => {
+    getDataGrosir(state[0].startDate, state[0].endDate);
+    getDataMagrup(state[0].startDate, state[0].endDate);
+  };
+
   const dataChartGrosir = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels: labelGrosir,
     datasets: [
       {
         label: "Grosir",
-        data: [33, 53, 85, 41, 44, 65],
+        data: dataGrosir,
         fill: true,
         backgroundColor: "#0d6efda3",
         borderColor: "#0d6efd",
@@ -95,11 +241,11 @@ function Dashboard() {
   };
 
   const dataChartMaGrup = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels: labelMagrup,
     datasets: [
       {
-        label: "Grosir",
-        data: [33, 53, 85, 41, 44, 65],
+        label: "MA Grup",
+        data: dataMagrup,
         fill: true,
         backgroundColor: "#6610f2a3",
         borderColor: "#6610f2",
@@ -107,12 +253,15 @@ function Dashboard() {
     ],
   };
 
+  Date.prototype.subtractDays = function (d) {
+    this.setDate(this.getDate() - d);
+    return this;
+  };
+
   const [state, setState] = useState([
     {
-      // startDate: new Date(),
-      // endDate: new Date(),
-      startDate: "2024-07-01",
-      endDate: "2024-07-31",
+      startDate: new Date().subtractDays(29),
+      endDate: new Date(),
       key: "selection",
     },
   ]);
@@ -151,10 +300,10 @@ function Dashboard() {
                 ranges={state}
                 direction="horizontal"
               />
-              <Row className="px-4">
+              <Row className="px-4 mb-2">
                 <Dropdown.Item
-                  className="bg-primary w-100 text-light text-center"
-                  // onClick={() => handleFilterTanggal()}
+                  className="bg-primary w-100 text-light text-center py-2"
+                  onClick={() => handleFilterTanggal()}
                 >
                   Tampilkan
                 </Dropdown.Item>
@@ -172,21 +321,47 @@ function Dashboard() {
               <Row>
                 <Col xs={9}>
                   <div className="text-lighter text-dark mb-1">
-                    Rata-Rata <strong>Grosir</strong>
+                    Rata-Rata <strong>Grosir</strong>/hari
                   </div>
                   <h4 className="text-gray-800 mt-2">
                     Rp <CountUp end={avgGrosir} />
                   </h4>
                 </Col>
                 <Col xs={3} className="text-success text-end pt-3 ">
-                  <FontAwesomeIcon icon={faArrowTrendUp} size="2x" />
-                  {/* <FontAwesomeIcon icon={faArrowTrendDown} size="2x" /> */}
-                  <span className="text-success">+5%</span>
+                  {diffGrosir.toString().includes("-") ? (
+                    <>
+                      <FontAwesomeIcon
+                        className="text-danger"
+                        icon={faArrowTrendDown}
+                        size="2x"
+                      />
+                      <span
+                        style={{ fontSize: "12px" }}
+                        className="text-danger"
+                      >
+                        {diffGrosir}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon
+                        className="text-success"
+                        icon={faArrowTrendUp}
+                        size="2x"
+                      />
+                      <span
+                        style={{ fontSize: "12px" }}
+                        className="text-success"
+                      >
+                        +{diffGrosir}
+                      </span>
+                    </>
+                  )}
                 </Col>
               </Row>
             </Card.Body>
           </Card>
-          <small>* Dibandingkan dengan bulan kemarin</small>
+          <small>* Dibandingkan dengan bulan sebelumnya</small>
         </Col>
         <Col xl={3} md={6} className="my-1">
           <Card className="shadow border-left-indigo">
@@ -194,40 +369,42 @@ function Dashboard() {
               <Row>
                 <Col xs={9}>
                   <div className="text-lighter text-dark mb-1">
-                    Rata-Rata <strong>MA Grup</strong>
+                    Rata-Rata <strong>MA Grup</strong>/hari
                   </div>
                   <h4 className="text-gray-800 mt-2">
-                    Rp <CountUp end={3500000} />
+                    Rp <CountUp end={avgMagrup} />
                   </h4>
                 </Col>
                 <Col xs={3} className="text-danger text-end pt-3 ">
-                  {/* <FontAwesomeIcon icon={faArrowTrendUp} size="2x" /> */}
-                  <FontAwesomeIcon icon={faArrowTrendDown} size="2x" />
-                  <span className="text-danger">-5%</span>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-          <small>* Dibandingkan dengan bulan kemarin</small>
-        </Col>
-        <Col xl={3} md={6} className="my-1">
-          <Card className="shadow border-left-dark mb-1">
-            <Card.Body>
-              <Row>
-                <Col xs={9}>
-                  <div className="text-lighter text-dark mb-1">
-                    Jumlah Transaksi
-                  </div>
-                  <h4 className="text-gray-800 mt-2">
-                    <CountUp end={350} />
-                  </h4>
-                </Col>
-                <Col
-                  xs={3}
-                  className="text-dark text-end pt-3"
-                  style={{ marginBottom: "20px" }}
-                >
-                  <FontAwesomeIcon icon={faReceipt} size="2x" />
+                  {diffMagrup.toString().includes("-") ? (
+                    <>
+                      <FontAwesomeIcon
+                        className="text-danger"
+                        icon={faArrowTrendDown}
+                        size="2x"
+                      />
+                      <span
+                        style={{ fontSize: "12px" }}
+                        className="text-danger"
+                      >
+                        {diffMagrup}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon
+                        className="text-success"
+                        icon={faArrowTrendUp}
+                        size="2x"
+                      />
+                      <span
+                        style={{ fontSize: "12px" }}
+                        className="text-success"
+                      >
+                        +{diffMagrup}
+                      </span>
+                    </>
+                  )}
                 </Col>
               </Row>
             </Card.Body>
@@ -239,10 +416,10 @@ function Dashboard() {
               <Row>
                 <Col xs={9}>
                   <div className="text-lighter text-dark mb-1">
-                    Jumlah Produk
+                    Total <strong>Eceran</strong>
                   </div>
                   <h4 className="text-gray-800 mt-2">
-                    <CountUp end={304} />
+                    Rp <CountUp end={12000000} />
                   </h4>
                 </Col>
                 <Col
@@ -250,7 +427,30 @@ function Dashboard() {
                   className="text-success text-end pt-3"
                   style={{ marginBottom: "20px" }}
                 >
-                  <FontAwesomeIcon icon={faTable} size="2x" />
+                  <FontAwesomeIcon icon={faGlasses} size="2x" />
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col xl={3} md={6} className="my-1">
+          <Card className="shadow border-left-dark mb-1">
+            <Card.Body>
+              <Row>
+                <Col xs={9}>
+                  <div className="text-lighter text-dark mb-1">
+                    Jumlah <strong>Transaksi</strong>
+                  </div>
+                  <h4 className="text-gray-800 mt-2">
+                    <CountUp end={350} />
+                  </h4>
+                </Col>
+                <Col
+                  xs={3}
+                  className="text-dark text-end pt-3"
+                  style={{ marginBottom: "20px" }}
+                >
+                  <FontAwesomeIcon icon={faReceipt} size="2x" />
                 </Col>
               </Row>
             </Card.Body>
