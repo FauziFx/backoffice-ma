@@ -28,6 +28,7 @@
     "react-bootstrap": "^2.10.1",
     "react-bootstrap-icons": "^1.11.3",
     "react-chartjs-2": "^5.2.0",
+    "react-circular-progressbar": "^2.1.0",
     "react-countup": "^6.5.3",
     "react-data-table-component": "^7.6.2",
     "react-date-range": "^2.0.0-alpha.4",

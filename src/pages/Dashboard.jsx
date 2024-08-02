@@ -14,6 +14,7 @@ import {
   faReceipt,
   faTable,
   faGlasses,
+  faCartShopping,
 } from "@fortawesome/free-solid-svg-icons";
 import { FormatRupiah } from "@arismun/format-rupiah";
 import { Line, Bar } from "react-chartjs-2";
@@ -21,6 +22,8 @@ import "chart.js/auto";
 import CountUp from "react-countup";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 function Dashboard() {
   const API = import.meta.env.VITE_API_URL;
@@ -51,6 +54,13 @@ function Dashboard() {
   const [diffMagrup, setDiffMagrup] = useState(0);
   const [labelLab, setLabelLab] = useState([]);
   const [dataLab, setDataLab] = useState([]);
+  // Omzet
+  const [omzetGrosir, setOmzetGrosir] = useState(0);
+  const [omzetEceran, setOmzetEceran] = useState(0);
+  const [omzetLainnya, setOmzetLainnya] = useState(0);
+  const [omzetTotal, setOmzetTotal] = useState(0);
+  const [omzetTarget, setOmzetTarget] = useState(0);
+  const [pathColor, setPathColor] = useState("");
 
   const getData = async (startDate, endDate) => {
     try {
@@ -304,11 +314,123 @@ function Dashboard() {
     }
   };
 
+  const getDataOmzet = async () => {
+    moment.locale("id");
+    const URLGrosir = API + "laporan/ringkasan";
+    const URLEceran = API + "laporan/eceran";
+    const URLLainnya = API + "laporan/magrup/";
+    let start_date = moment().startOf("month").format("YYYY-MM-DD");
+    let end_date = moment().endOf("month").format("YYYY-MM-DD");
+    // let start_date = "2024-07-01";
+    // let end_date = "2024-07-31";
+
+    let totalGros, totalEce, totalLain;
+
+    const grosir = await axios.get(URLGrosir, {
+      params: {
+        start_date: start_date,
+        end_date: end_date,
+      },
+      headers: {
+        Authorization: localStorage.getItem("user-token"),
+      },
+    });
+
+    const MAkarangsembung = await axios.get(URLLainnya + 10, {
+      params: {
+        start_date: start_date,
+        end_date: end_date,
+      },
+      headers: {
+        Authorization: localStorage.getItem("user-token"),
+      },
+    });
+    const MAsindang = await axios.get(URLLainnya + 14, {
+      params: {
+        start_date: start_date,
+        end_date: end_date,
+      },
+      headers: {
+        Authorization: localStorage.getItem("user-token"),
+      },
+    });
+    const MAsandang = await axios.get(URLLainnya + 18, {
+      params: {
+        start_date: start_date,
+        end_date: end_date,
+      },
+      headers: {
+        Authorization: localStorage.getItem("user-token"),
+      },
+    });
+
+    if (grosir.data.message == "invalid token") {
+      localStorage.clear();
+      return navigate("/login");
+    } else {
+      let data = grosir.data;
+      totalGros = data.total;
+      setOmzetGrosir(data.total);
+
+      let totalKar =
+        MAkarangsembung.data.data === undefined
+          ? 0
+          : MAkarangsembung.data.data.total;
+      let totalSin =
+        MAsindang.data.data === undefined ? 0 : MAsindang.data.data.total;
+      let totalSan =
+        MAsandang.data.data === undefined ? 0 : MAsandang.data.data.total;
+
+      let totalLainnya =
+        parseInt(totalKar) + parseInt(totalSin) + parseInt(totalSan);
+      totalLain = totalLainnya;
+      setOmzetLainnya(totalLainnya);
+    }
+
+    const eceran = await axios.get(URLEceran, {
+      params: {
+        start_date: start_date,
+        end_date: end_date,
+      },
+      headers: {
+        Authorization: localStorage.getItem("user-token"),
+      },
+    });
+
+    if (eceran.data.message == "invalid token") {
+      localStorage.clear();
+      return navigate("/login");
+    } else {
+      let data = eceran.data.data;
+      let total = data.reduce(function (prev, current) {
+        return prev + +parseInt(current.Total);
+      }, 0);
+      totalEce = total;
+      setOmzetEceran(total);
+    }
+
+    let totalOmzet =
+      parseInt(totalGros) + parseInt(totalEce) + parseInt(totalLain);
+    setOmzetTotal(totalOmzet);
+    const percentageChange = (target, now) => (now / target) * 100 || 0;
+
+    let target = percentageChange(120000000, totalOmzet).toFixed(0);
+    setOmzetTarget(target);
+    if (target < 50) {
+      setPathColor("#dc3545");
+    } else if (target < 80) {
+      setPathColor("#fd7e14");
+    } else {
+      setPathColor("#198754");
+    }
+  };
+
   useEffect(() => {
     getDataGrosir(state[0].startDate, state[0].endDate);
     getDataMagrup(state[0].startDate, state[0].endDate);
     getData(state[0].startDate, state[0].endDate);
     getDataBiayaLab(state[0].startDate, state[0].endDate);
+    getDataOmzet();
   }, []);
 
   const handleFilterTanggal = () => {
@@ -457,7 +579,7 @@ function Dashboard() {
                     Rp <CountUp end={totalGrosir} />
                   </h5>
                 </Col>
-                <Col xs={3} className="text-success text-end pt-3 px-1">
+                <Col xs={3} className="text-success text-end pt-3 ps-0 pe-2">
                   {diffGrosir.toString().includes("-") ? (
                     <>
                       <FontAwesomeIcon
@@ -504,7 +626,7 @@ function Dashboard() {
                     Rp <CountUp end={totalMagrup} />
                   </h5>
                 </Col>
-                <Col xs={3} className="text-danger text-end pt-3 px-1">
+                <Col xs={3} className="text-danger text-end pt-3 ps-0 pe-2">
                   {diffMagrup.toString().includes("-") ? (
                     <>
                       <FontAwesomeIcon
@@ -618,7 +740,7 @@ function Dashboard() {
           </Card>
         </Col>
         {/* Chart Bar Biaya Lab */}
-        <Col md={12} className="my-2">
+        <Col md={8} className="my-2">
           <Card className="shadow">
             <Card.Header>
               <h6 className="mb-0">Biaya Lab MA Grup</h6>
@@ -629,7 +751,72 @@ function Dashboard() {
           </Card>
         </Col>
         {/* Omzet Bahagia */}
-        <Col md={4} className="my-2"></Col>
+        <Col md={4} className="my-2">
+          <Card className="shadow">
+            <Card.Header>
+              <h6 className="mb-0">Omzet Bahagia</h6>
+            </Card.Header>
+            <Card.Body>
+              <div className="text-center mb-2">
+                <h6>
+                  Target Bulan
+                  <strong> {moment().tz("Asia/Jakarta").format("MMMM")}</strong>
+                </h6>
+              </div>
+              <div style={{ width: 150, height: 150, margin: "0 auto" }}>
+                <CircularProgressbar
+                  value={omzetTarget}
+                  text={`${omzetTarget}%`}
+                  styles={buildStyles({
+                    pathColor: pathColor,
+                    textColor: pathColor,
+                  })}
+                />
+              </div>
+              <ul className="list-group list-group-flush mt-2">
+                <li className="list-group-item d-flex justify-content-between align-items-start">
+                  <div>
+                    <FontAwesomeIcon
+                      icon={faCartShopping}
+                      className="text-primary"
+                    />{" "}
+                    Grosir
+                  </div>
+                  <span>
+                    <FormatRupiah value={omzetGrosir} />
+                  </span>
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-start">
+                  <div>
+                    <FontAwesomeIcon
+                      icon={faGlasses}
+                      className="text-success"
+                    />{" "}
+                    Eceran
+                  </div>
+                  <span>
+                    <FormatRupiah value={omzetEceran} />
+                  </span>
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-start">
+                  <div>
+                    <FontAwesomeIcon icon={faStore} className="text-danger" />{" "}
+                    Lainnya
+                  </div>
+                  <span>
+                    <FormatRupiah value={omzetLainnya} />
+                  </span>
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-start mt-2">
+                  <div className="fw-bold">TOTAL</div>
+                  <strong>
+                    <FormatRupiah value={omzetTotal} />
+                  </strong>
+                </li>
+              </ul>
+            </Card.Body>
+          </Card>
+        </Col>
       </Row>
     </Container>
   );
