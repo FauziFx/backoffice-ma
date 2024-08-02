@@ -16,7 +16,7 @@ import {
   faGlasses,
 } from "@fortawesome/free-solid-svg-icons";
 import { FormatRupiah } from "@arismun/format-rupiah";
-import { Line } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import CountUp from "react-countup";
 import { useNavigate } from "react-router-dom";
@@ -49,6 +49,8 @@ function Dashboard() {
   const [totalEceran, setTotalEceran] = useState(0);
   const [diffGrosir, setDiffGrosir] = useState(0);
   const [diffMagrup, setDiffMagrup] = useState(0);
+  const [labelLab, setLabelLab] = useState([]);
+  const [dataLab, setDataLab] = useState([]);
 
   const getData = async (startDate, endDate) => {
     try {
@@ -269,16 +271,51 @@ function Dashboard() {
     }
   };
 
+  const getDataBiayaLab = async (startDate, endDate) => {
+    try {
+      moment.locale("id");
+      const URL = API + "laporan/magrup";
+
+      const response = await axios.get(URL, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        let data = response.data.data;
+        data.sort((a, b) =>
+          (a.nama_pelanggan || "").localeCompare(b.nama_pelanggan || "")
+        );
+        let labelArr = data.map((item) => item.nama_pelanggan || "-");
+        let dataArr = data.map((item) => item.total);
+        setLabelLab(labelArr);
+        setDataLab(dataArr);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getDataGrosir(state[0].startDate, state[0].endDate);
     getDataMagrup(state[0].startDate, state[0].endDate);
     getData(state[0].startDate, state[0].endDate);
+    getDataBiayaLab(state[0].startDate, state[0].endDate);
   }, []);
 
   const handleFilterTanggal = () => {
     getDataGrosir(state[0].startDate, state[0].endDate);
     getDataMagrup(state[0].startDate, state[0].endDate);
     getData(state[0].startDate, state[0].endDate);
+    getDataBiayaLab(state[0].startDate, state[0].endDate);
   };
 
   const dataChartGrosir = {
@@ -309,6 +346,40 @@ function Dashboard() {
     ],
   };
 
+  const dataChartBiayaLab = {
+    labels: labelLab,
+    datasets: [
+      {
+        label: "Biaya Lab",
+        data: dataLab,
+        fill: true,
+        backgroundColor: [
+          "#04004a",
+          "#845ec2",
+          "#d65db1",
+          "#bd38b2",
+          "#ff6f91",
+          "#ff8066",
+          "#ff9671",
+          "#ffc75f",
+          "#b39cd0",
+          "#2c73d2",
+          "#296073",
+          "#0089ba",
+          "#008f7a",
+          "#005b44",
+          "#00c9a7",
+          "#c4fcef",
+          "#4d8076",
+          "#4b4453",
+          "#b0a8b9",
+          "#ac5e00",
+          "#c34a36",
+        ],
+      },
+    ],
+  };
+
   Date.prototype.subtractDays = function (d) {
     this.setDate(this.getDate() - d);
     return this;
@@ -335,7 +406,7 @@ function Dashboard() {
           <Dropdown className="date-filter btn-group">
             <Dropdown.Toggle
               variant="default"
-              className="border btn-date-filter"
+              className="border btn-date-filter bg-white"
               id="dropdown-basic"
             >
               {format(state[0].startDate, "dd/MM/yyyy") ===
@@ -518,6 +589,7 @@ function Dashboard() {
 
       {/* Chart */}
       <Row>
+        {/* Chart Grosir */}
         <Col md={6} className="my-2">
           <Card className="shadow">
             <Card.Header>
@@ -531,6 +603,7 @@ function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
+        {/* Chart MA Grup */}
         <Col md={6} className="my-2">
           <Card className="shadow">
             <Card.Header>
@@ -544,6 +617,19 @@ function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
+        {/* Chart Bar Biaya Lab */}
+        <Col md={12} className="my-2">
+          <Card className="shadow">
+            <Card.Header>
+              <h6 className="mb-0">Biaya Lab MA Grup</h6>
+            </Card.Header>
+            <Card.Body>
+              <Bar data={dataChartBiayaLab} />
+            </Card.Body>
+          </Card>
+        </Col>
+        {/* Omzet Bahagia */}
+        <Col md={4} className="my-2"></Col>
       </Row>
     </Container>
   );
