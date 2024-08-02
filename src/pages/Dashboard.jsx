@@ -43,16 +43,67 @@ function Dashboard() {
   const [dataMagrup, setDataMagrup] = useState([]);
   const [avgGrosir, setAvgGrosir] = useState("");
   const [avgMagrup, setAvgMagrup] = useState("");
+  const [totalGrosir, setTotalGrosir] = useState("");
+  const [totalMagrup, setTotalMagrup] = useState("");
   const [jumlahTransaksi, setJumlahTransaksi] = useState(0);
   const [totalEceran, setTotalEceran] = useState(0);
   const [diffGrosir, setDiffGrosir] = useState(0);
   const [diffMagrup, setDiffMagrup] = useState(0);
 
+  const getData = async (startDate, endDate) => {
+    try {
+      moment.locale("id");
+      const URLEceran = API + "laporan/eceran";
+      const URLTransaksi = API + "transaksi/count";
+
+      const eceran = await axios.get(URLEceran, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+
+      if (eceran.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        let data = eceran.data.data;
+        let total = data.reduce(function (prev, current) {
+          return prev + +parseInt(current.Total);
+        }, 0);
+        setTotalEceran(total);
+      }
+
+      const transaksi = await axios.get(URLTransaksi, {
+        params: {
+          start_date: moment(startDate).format("YYYY-MM-DD"),
+          end_date: moment(endDate).format("YYYY-MM-DD"),
+        },
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+
+      if (transaksi.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        let jmlTrx = transaksi.data.data.jumlah_transaksi;
+        setJumlahTransaksi(jmlTrx);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getDataGrosir = async (startDate, endDate) => {
     try {
       moment.locale("id");
       const URL = API + "laporan/transaksi";
-      let avgLast, avgNow;
+      let netLast, netNow;
 
       const firstDateInMs = startDate.getTime();
       const secondDateInMs = endDate.getTime();
@@ -86,12 +137,14 @@ function Dashboard() {
         return navigate("/login");
       } else {
         let data = response.data.data.reverse();
-        let totalGrosir = data.reduce(function (prev, current) {
+        let total = data.reduce(function (prev, current) {
           return prev + +parseInt(current.total);
         }, 0);
-        let avg = totalGrosir / data.length;
+
+        setTotalGrosir(total);
+        netNow = total;
+        let avg = total / data.length;
         setAvgGrosir(avg);
-        avgNow = avg;
 
         let labelArr = data.map((item) =>
           moment(item.tanggal).tz("Asia/Jakarta").format("Do-MMM-YY")
@@ -116,16 +169,15 @@ function Dashboard() {
         return navigate("/login");
       } else {
         let data = lastMonth.data.data;
-        let totalGrosir = data.reduce(function (prev, current) {
+        let total = data.reduce(function (prev, current) {
           return prev + +parseInt(current.total);
         }, 0);
-        let avg = totalGrosir / data.length;
-        avgLast = avg;
+        netLast = total;
       }
 
       const percentageChange = (last, now) => (now / last) * 100 - 100 || 0;
 
-      let diff = percentageChange(avgLast, avgNow).toFixed(2) + "%";
+      let diff = percentageChange(netLast, netNow).toFixed(1) + "%";
       setDiffGrosir(diff);
     } catch (error) {
       console.log(error);
@@ -136,7 +188,7 @@ function Dashboard() {
     try {
       moment.locale("id");
       const URL = API + "laporan/transaksi";
-      let avgLast, avgNow;
+      let netLast, netNow;
 
       const firstDateInMs = startDate.getTime();
       const secondDateInMs = endDate.getTime();
@@ -171,12 +223,13 @@ function Dashboard() {
       } else {
         let data = response.data.data.reverse();
 
-        let totalMagrup = data.reduce(function (prev, current) {
+        let total = data.reduce(function (prev, current) {
           return prev + +parseInt(current.total);
         }, 0);
-        let avg = totalMagrup / data.length;
+        setTotalMagrup(total);
+        netNow = total;
+        let avg = total / data.length;
         setAvgMagrup(avg);
-        avgNow = avg;
 
         let labelArr = data.map((item) =>
           moment(item.tanggal).tz("Asia/Jakarta").format("Do-MMM-YY")
@@ -201,16 +254,15 @@ function Dashboard() {
         return navigate("/login");
       } else {
         let data = lastMonth.data.data;
-        let totalMagrup = data.reduce(function (prev, current) {
+        let total = data.reduce(function (prev, current) {
           return prev + +parseInt(current.total);
         }, 0);
-        let avg = totalMagrup / data.length;
-        avgLast = avg;
+        netLast = total;
       }
 
       const percentageChange = (last, now) => (now / last) * 100 - 100 || 0;
 
-      let diff = percentageChange(avgLast, avgNow).toFixed(2) + "%";
+      let diff = percentageChange(netLast, netNow).toFixed(1) + "%";
       setDiffMagrup(diff);
     } catch (error) {
       console.log(error);
@@ -220,11 +272,13 @@ function Dashboard() {
   useEffect(() => {
     getDataGrosir(state[0].startDate, state[0].endDate);
     getDataMagrup(state[0].startDate, state[0].endDate);
+    getData(state[0].startDate, state[0].endDate);
   }, []);
 
   const handleFilterTanggal = () => {
     getDataGrosir(state[0].startDate, state[0].endDate);
     getDataMagrup(state[0].startDate, state[0].endDate);
+    getData(state[0].startDate, state[0].endDate);
   };
 
   const dataChartGrosir = {
@@ -236,6 +290,7 @@ function Dashboard() {
         fill: true,
         backgroundColor: "#0d6efda3",
         borderColor: "#0d6efd",
+        lineTension: 0.3,
       },
     ],
   };
@@ -249,6 +304,7 @@ function Dashboard() {
         fill: true,
         backgroundColor: "#6610f2a3",
         borderColor: "#6610f2",
+        lineTension: 0.3,
       },
     ],
   };
@@ -315,19 +371,22 @@ function Dashboard() {
 
       {/* Panel */}
       <Row className="pt-1">
+        <small style={{ fontSize: "11px" }}>
+          * Dibandingkan dengan bulan sebelumnya
+        </small>
         <Col xl={3} md={6} className="my-1">
           <Card className="shadow border-left-primary">
             <Card.Body>
               <Row>
                 <Col xs={9}>
                   <div className="text-lighter text-dark mb-1">
-                    Rata-Rata <strong>Grosir</strong>/hari
+                    Total <strong>Grosir</strong>
                   </div>
-                  <h4 className="text-gray-800 mt-2">
-                    Rp <CountUp end={avgGrosir} />
-                  </h4>
+                  <h5 className="text-gray-800 mt-2">
+                    Rp <CountUp end={totalGrosir} />
+                  </h5>
                 </Col>
-                <Col xs={3} className="text-success text-end pt-3 ">
+                <Col xs={3} className="text-success text-end pt-3 px-1">
                   {diffGrosir.toString().includes("-") ? (
                     <>
                       <FontAwesomeIcon
@@ -336,7 +395,7 @@ function Dashboard() {
                         size="2x"
                       />
                       <span
-                        style={{ fontSize: "12px" }}
+                        style={{ fontSize: "11px" }}
                         className="text-danger"
                       >
                         {diffGrosir}
@@ -361,7 +420,6 @@ function Dashboard() {
               </Row>
             </Card.Body>
           </Card>
-          <small>* Dibandingkan dengan bulan sebelumnya</small>
         </Col>
         <Col xl={3} md={6} className="my-1">
           <Card className="shadow border-left-indigo">
@@ -369,13 +427,13 @@ function Dashboard() {
               <Row>
                 <Col xs={9}>
                   <div className="text-lighter text-dark mb-1">
-                    Rata-Rata <strong>MA Grup</strong>/hari
+                    Total <strong>MA Grup</strong>
                   </div>
-                  <h4 className="text-gray-800 mt-2">
-                    Rp <CountUp end={avgMagrup} />
-                  </h4>
+                  <h5 className="text-gray-800 mt-2">
+                    Rp <CountUp end={totalMagrup} />
+                  </h5>
                 </Col>
-                <Col xs={3} className="text-danger text-end pt-3 ">
+                <Col xs={3} className="text-danger text-end pt-3 px-1">
                   {diffMagrup.toString().includes("-") ? (
                     <>
                       <FontAwesomeIcon
@@ -384,7 +442,7 @@ function Dashboard() {
                         size="2x"
                       />
                       <span
-                        style={{ fontSize: "12px" }}
+                        style={{ fontSize: "11px" }}
                         className="text-danger"
                       >
                         {diffMagrup}
@@ -418,9 +476,9 @@ function Dashboard() {
                   <div className="text-lighter text-dark mb-1">
                     Total <strong>Eceran</strong>
                   </div>
-                  <h4 className="text-gray-800 mt-2">
-                    Rp <CountUp end={12000000} />
-                  </h4>
+                  <h5 className="text-gray-800 mt-2">
+                    Rp <CountUp end={totalEceran} />
+                  </h5>
                 </Col>
                 <Col
                   xs={3}
@@ -441,9 +499,9 @@ function Dashboard() {
                   <div className="text-lighter text-dark mb-1">
                     Jumlah <strong>Transaksi</strong>
                   </div>
-                  <h4 className="text-gray-800 mt-2">
-                    <CountUp end={350} />
-                  </h4>
+                  <h5 className="text-gray-800 mt-2">
+                    <CountUp end={jumlahTransaksi} />
+                  </h5>
                 </Col>
                 <Col
                   xs={3}
@@ -463,9 +521,12 @@ function Dashboard() {
         <Col md={6} className="my-2">
           <Card className="shadow">
             <Card.Header>
-              <h6 className="mb-0">Grafik Penjualan Grosir</h6>
+              <h6 className="mb-0">Grafik Grosir</h6>
             </Card.Header>
             <Card.Body>
+              <small>
+                Rata-rata: <FormatRupiah value={avgGrosir} />
+              </small>
               <Line data={dataChartGrosir} />
             </Card.Body>
           </Card>
@@ -473,9 +534,12 @@ function Dashboard() {
         <Col md={6} className="my-2">
           <Card className="shadow">
             <Card.Header>
-              <h6 className="mb-0">Grafik Penjualan MA Grup</h6>
+              <h6 className="mb-0">Grafik MA Grup</h6>
             </Card.Header>
             <Card.Body>
+              <small>
+                Rata-rata: <FormatRupiah value={avgMagrup} />
+              </small>
               <Line data={dataChartMaGrup} />
             </Card.Body>
           </Card>
