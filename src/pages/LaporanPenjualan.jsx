@@ -344,7 +344,7 @@ function LaporanPenjualan() {
 
             <Dropdown.Toggle
               variant="default"
-              className="border btn-date-filter"
+              className="border btn-date-filter bg-white"
               id="dropdown-basic"
             >
               {format(state[0].startDate, "dd/MM/yyyy") ===
@@ -388,7 +388,7 @@ function LaporanPenjualan() {
               className={
                 active == item.id
                   ? "w-100 text-start mb-2 rounded py-2"
-                  : "w-100 text-start mb-2 text-secondary py-2"
+                  : "w-100 text-start mb-2 text-secondary py-2 bg-white"
               }
               variant={active == item.id ? "primary" : "default"}
               id={item.id}

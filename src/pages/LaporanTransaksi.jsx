@@ -155,7 +155,7 @@ function LaporanTransaksi() {
 
             <Dropdown.Toggle
               variant="default"
-              className="border btn-date-filter"
+              className="border btn-date-filter bg-white"
               id="dropdown-basic"
             >
               {format(state[0].startDate, "dd/MM/yyyy") ===
@@ -204,7 +204,7 @@ function LaporanTransaksi() {
             <Dropdown.Toggle
               id="dropdown-button"
               variant="default"
-              className="px-4 border w-100 btn-dropdown"
+              className="px-4 border w-100 btn-dropdown bg-white"
             >
               <Receipt />
               &nbsp; {jenisTransaksi}

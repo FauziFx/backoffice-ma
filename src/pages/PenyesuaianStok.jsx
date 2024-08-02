@@ -134,7 +134,7 @@ function PenyesuaianStok() {
 
                 <Dropdown.Toggle
                   variant="default"
-                  className="border btn-date-filter"
+                  className="border btn-date-filter bg-white"
                   id="dropdown-basic"
                 >
                   {format(state[0].startDate, "dd/MM/yyyy") ===
