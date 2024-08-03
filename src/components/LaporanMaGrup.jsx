@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { Table, Button, Alert } from "react-bootstrap";
+import { Table, Button, Alert, Card } from "react-bootstrap";
 import { FormatRupiah } from "@arismun/format-rupiah";
 import { ExportToExcel } from "../utils/ExportToExcel";
 import moment from "moment-timezone";
@@ -45,38 +45,42 @@ function LaporanMaGrup({ data, totalItem, total, startDate, endDate }) {
           Sekarang udah bisa export datanya ke Excel (Klik Download!!)
         </p>
       </Alert>
-      <div className="text-end mb-2">
-        <ExportToExcel apiData={dataExport} fileName={fileName} />
-      </div>
-      <Table responsive>
-        <thead>
-          <tr>
-            <th className="bg-lightgrey fw-bold">Nama</th>
-            <th className="bg-lightgrey fw-bold">Item Terjual</th>
-            <th className="bg-lightgrey fw-bold text-end">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
-              <td className="border-0 text-grey">{item.nama_pelanggan}</td>
-              <td className="border-0 text-grey">{item.item_terjual}</td>
-              <td className="text-end border-0 text-grey">
-                <FormatRupiah value={item.total} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-        <tfoot className="border-top">
-          <tr>
-            <th>Total</th>
-            <th>{totalItem}</th>
-            <th className="text-end pe-2">
-              <FormatRupiah value={total} />
-            </th>
-          </tr>
-        </tfoot>
-      </Table>
+      <Card className="mt-1">
+        <Card.Body>
+          <div className="text-end mb-2">
+            <ExportToExcel apiData={dataExport} fileName={fileName} />
+          </div>
+          <Table responsive>
+            <thead>
+              <tr>
+                <th className="bg-lightgrey fw-bold">Nama</th>
+                <th className="bg-lightgrey fw-bold">Item Terjual</th>
+                <th className="bg-lightgrey fw-bold text-end">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item, index) => (
+                <tr key={index}>
+                  <td className="border-0 text-grey">{item.nama_pelanggan}</td>
+                  <td className="border-0 text-grey">{item.item_terjual}</td>
+                  <td className="text-end border-0 text-grey">
+                    <FormatRupiah value={item.total} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot className="border-top">
+              <tr>
+                <th>Total</th>
+                <th>{totalItem}</th>
+                <th className="text-end pe-2">
+                  <FormatRupiah value={total} />
+                </th>
+              </tr>
+            </tfoot>
+          </Table>
+        </Card.Body>
+      </Card>
     </>
   );
 }

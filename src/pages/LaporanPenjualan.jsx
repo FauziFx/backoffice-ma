@@ -330,9 +330,9 @@ function LaporanPenjualan() {
 
   return (
     <Container className="pt-4">
-      <Row>
-        <Col>
-          <h3>Laporan Penjualan</h3>
+      <Row className="p-2 text-white bg-primary shadow-sm mx-1">
+        <Col className="pt-1">
+          <h4 className="mb-0">Laporan Penjualan</h4>
         </Col>
       </Row>
       <Row className="mb-2">
@@ -382,21 +382,25 @@ function LaporanPenjualan() {
       </Row>
       <Row>
         <Col md={3}>
-          {btnList.map((item, index) => (
-            <Button
-              key={item.id}
-              className={
-                active == item.id
-                  ? "w-100 text-start mb-2 rounded py-2"
-                  : "w-100 text-start mb-2 text-secondary py-2 bg-white"
-              }
-              variant={active == item.id ? "primary" : "default"}
-              id={item.id}
-              onClick={(e) => handleClick(e)}
-            >
-              {item.name}
-            </Button>
-          ))}
+          <Card className="mt-1">
+            <Card.Body>
+              {btnList.map((item, index) => (
+                <Button
+                  key={item.id}
+                  className={
+                    active == item.id
+                      ? "w-100 text-start mb-2 rounded py-2"
+                      : "w-100 text-start mb-2 text-secondary py-2 bg-white"
+                  }
+                  variant={active == item.id ? "primary" : "default"}
+                  id={item.id}
+                  onClick={(e) => handleClick(e)}
+                >
+                  {item.name}
+                </Button>
+              ))}
+            </Card.Body>
+          </Card>
         </Col>
         <Col sm={12} md={9}>
           <Container className={active == 1 ? "d-block" : "d-none"}>

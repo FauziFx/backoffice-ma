@@ -7,6 +7,7 @@ import {
   InputGroup,
   Form,
   Table,
+  Card,
 } from "react-bootstrap";
 import { Search, Trash3Fill } from "react-bootstrap-icons";
 import TambahKategori from "../components/TambahKategori";
@@ -188,9 +189,9 @@ function Kategori() {
 
   return (
     <Container className="pt-4">
-      <Row>
-        <Col>
-          <h3>Kategori</h3>
+      <Row className="p-2 text-white bg-primary shadow-sm mx-1">
+        <Col className="pt-1">
+          <h4 className="mb-0">Kategori</h4>
         </Col>
         <Col className=" d-none d-sm-none d-md-block">
           <Button onClick={() => handleShowTambah()} className="float-end">
@@ -216,22 +217,26 @@ function Kategori() {
               </InputGroup>
             </Col>
           </Row>
-          <Table hover size="md" responsive className="mt-2 table-fixed">
-            <thead>
-              <tr>
-                <th className="p-2 bg-light col-6">Nama Kategori</th>
-                <th className="p-2 bg-light col-6">Produk</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataKategori.map((item, index) => (
-                <tr key={index} onClick={() => handleClickRow(item.id)}>
-                  <td className="col-6">{item.nama_kategori}</td>
-                  <td className="col-6">{item.produk} Item</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <Card className="mt-1">
+            <Card.Body>
+              <Table hover size="md" responsive className="mt-2 table-fixed">
+                <thead>
+                  <tr>
+                    <th className="p-2 bg-light col-6">Nama Kategori</th>
+                    <th className="p-2 bg-light col-6">Produk</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dataKategori.map((item, index) => (
+                    <tr key={index} onClick={() => handleClickRow(item.id)}>
+                      <td className="col-6">{item.nama_kategori}</td>
+                      <td className="col-6">{item.produk} Item</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
         </Col>
         <Col md={6} className={showTambah ? "d-block" : "d-none"}>
           <TambahKategori
@@ -241,47 +246,51 @@ function Kategori() {
         </Col>
         <Col md={6} className={showDetail ? "d-block" : "d-none"}>
           <Container>
-            <small className="mb-0">Kategori</small>
-            <hr style={{ margin: 0 }} />
-            <Form className="mt-2" onSubmit={handleSubmit}>
-              <Form.Group as={Row} className="mb-2">
-                <Form.Label column sm={3}>
-                  Nama Kategori <i className="text-danger">*</i>
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control
-                    type="text"
-                    value={kategoriDetail.nama_kategori}
-                    onChange={(e) => handleChange(e)}
-                    required
-                    placeholder="Nama Kategori"
-                  />
-                </Col>
-              </Form.Group>
-              <div className="d-flex justify-content-between">
-                <div>
-                  <Button
-                    variant="danger"
-                    className="my-2"
-                    onClick={() => handleClickHapus(kategoriDetail.id)}
-                  >
-                    <Trash3Fill />
-                  </Button>
-                </div>
-                <div>
-                  <Button type="submit" className="float-end mt-2">
-                    Simpan
-                  </Button>
-                  <Button
-                    variant="default"
-                    className="float-end border me-2 my-2"
-                    onClick={() => setShowDetail(false)}
-                  >
-                    Batal
-                  </Button>
-                </div>
-              </div>
-            </Form>
+            <Card className="mt-1">
+              <Card.Body>
+                <small className="mb-0">Kategori</small>
+                <hr style={{ margin: 0 }} />
+                <Form className="mt-2" onSubmit={handleSubmit}>
+                  <Form.Group as={Row} className="mb-2">
+                    <Form.Label column sm={3}>
+                      Nama Kategori <i className="text-danger">*</i>
+                    </Form.Label>
+                    <Col sm={9}>
+                      <Form.Control
+                        type="text"
+                        value={kategoriDetail.nama_kategori}
+                        onChange={(e) => handleChange(e)}
+                        required
+                        placeholder="Nama Kategori"
+                      />
+                    </Col>
+                  </Form.Group>
+                  <div className="d-flex justify-content-between">
+                    <div>
+                      <Button
+                        variant="danger"
+                        className="my-2"
+                        onClick={() => handleClickHapus(kategoriDetail.id)}
+                      >
+                        <Trash3Fill />
+                      </Button>
+                    </div>
+                    <div>
+                      <Button type="submit" className="float-end mt-2">
+                        Simpan
+                      </Button>
+                      <Button
+                        variant="default"
+                        className="float-end border me-2 my-2"
+                        onClick={() => setShowDetail(false)}
+                      >
+                        Batal
+                      </Button>
+                    </div>
+                  </div>
+                </Form>
+              </Card.Body>
+            </Card>
           </Container>
         </Col>
       </Row>

@@ -7,6 +7,7 @@ import {
   Form,
   InputGroup,
   Table,
+  Card,
 } from "react-bootstrap";
 import { Search, Trash3Fill } from "react-bootstrap-icons";
 import TambahAkun from "../components/TambahAkun";
@@ -200,9 +201,9 @@ function PengaturanAkun({ dataUser }) {
   });
   return (
     <Container className="pt-4">
-      <Row>
-        <Col>
-          <h3>Daftar Akun</h3>
+      <Row className="p-2 text-white bg-primary shadow-sm mx-1">
+        <Col className="pt-1">
+          <h4 className="mb-0">Daftar Akun</h4>
         </Col>
         <Col className=" d-none d-sm-none d-md-block">
           <Button onClick={() => handleShowTambah()} className="float-end">
@@ -229,32 +230,36 @@ function PengaturanAkun({ dataUser }) {
               </InputGroup>
             </Col>
           </Row>
-          <Table hover size="md" responsive className="mt-2">
-            <thead>
-              <tr>
-                <th className="p-2 bg-light">#</th>
-                <th className="p-2 bg-light">Nama</th>
-                <th className="p-2 bg-light">Username</th>
-                <th className="p-2 bg-light">Role</th>
-                <th className="p-2 bg-light">Nama Optik</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataAkun
-                .filter(function (user) {
-                  return user.id != dataUser.id;
-                })
-                .map((item, index) => (
-                  <tr key={index} onClick={() => handleClickRow(item.id)}>
-                    <td>{index + 1}</td>
-                    <td>{item.nama}</td>
-                    <td>{item.username}</td>
-                    <td>{item.role}</td>
-                    <td>{item.nama_optik || "-"}</td>
+          <Card className="mt-1">
+            <Card.Body>
+              <Table hover size="md" responsive className="mt-2">
+                <thead>
+                  <tr>
+                    <th className="p-2 bg-light">#</th>
+                    <th className="p-2 bg-light">Nama</th>
+                    <th className="p-2 bg-light">Username</th>
+                    <th className="p-2 bg-light">Role</th>
+                    <th className="p-2 bg-light">Nama Optik</th>
                   </tr>
-                ))}
-            </tbody>
-          </Table>
+                </thead>
+                <tbody>
+                  {dataAkun
+                    .filter(function (user) {
+                      return user.id != dataUser.id;
+                    })
+                    .map((item, index) => (
+                      <tr key={index} onClick={() => handleClickRow(item.id)}>
+                        <td>{index + 1}</td>
+                        <td>{item.nama}</td>
+                        <td>{item.username}</td>
+                        <td>{item.role}</td>
+                        <td>{item.nama_optik || "-"}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
         </Col>
         <Col md={6} className={showTambah ? "d-block" : "d-none"}>
           <TambahAkun
@@ -265,121 +270,129 @@ function PengaturanAkun({ dataUser }) {
         </Col>
         <Col md={6} className={showDetail ? "d-block" : "d-none"}>
           <Container>
-            <small className="mb-0">Edit Akun</small>
-            <hr style={{ margin: 0 }} />
-            <Form className="mt-2" onSubmit={handleSubmit} autoComplete="off">
-              <Form.Group as={Row} className="mb-2">
-                <Form.Label column sm={3}>
-                  Nama <i className="text-danger">*</i>
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control
-                    type="text"
-                    required
-                    name="nama"
-                    placeholder="Nama"
-                    value={akunDetail.nama}
-                    onChange={(e) => handleChange(e)}
-                    autoComplete="off"
-                  />
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-2">
-                <Form.Label column sm={3}>
-                  Username <i className="text-danger">*</i>
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control
-                    type="text"
-                    required
-                    name="username"
-                    placeholder="Username"
-                    value={akunDetail.username}
-                    onChange={(e) => handleChange(e)}
-                    autoComplete="off"
-                  />
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-2">
-                <Form.Label column sm={3}>
-                  password
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={akunDetail.password}
-                    onChange={(e) => handleChange(e)}
-                    autoComplete="off"
-                  />
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-2">
-                <Form.Label column sm={3}>
-                  Role <i className="text-danger">*</i>
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Select
-                    aria-label="Default select example"
-                    name="role"
-                    value={akunDetail.role}
-                    onChange={(e) => handleChange(e)}
-                    autoComplete="off"
-                  >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                    <option value="kasir">Kasir</option>
-                  </Form.Select>
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-2">
-                <Form.Label column sm={3}>
-                  Nama Optik
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Select
-                    aria-label="Default select example"
-                    name="id_optik"
-                    value={akunDetail.id_optik}
-                    onChange={(e) => handleChange(e)}
-                    autoComplete="off"
-                  >
-                    <option value="" disabled>
-                      -- Nama Optik --
-                    </option>
-                    {dataOptik.map((item, index) => (
-                      <option key={index} value={item.id}>
-                        {item.nama_optik}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Col>
-              </Form.Group>
-              <div className="d-flex justify-content-between">
-                <div>
-                  <Button
-                    variant="danger"
-                    className="my-2"
-                    onClick={() => handleClickHapus(akunDetail.id)}
-                  >
-                    <Trash3Fill />
-                  </Button>
-                </div>
-                <div>
-                  <Button type="submit" className="float-end mt-2">
-                    Simpan
-                  </Button>
-                  <Button
-                    variant="default"
-                    className="float-end border me-2 my-2"
-                    onClick={() => setShowDetail(false)}
-                  >
-                    Batal
-                  </Button>
-                </div>
-              </div>
-            </Form>
+            <Card className="mt-1">
+              <Card.Body>
+                <small className="mb-0">Edit Akun</small>
+                <hr style={{ margin: 0 }} />
+                <Form
+                  className="mt-2"
+                  onSubmit={handleSubmit}
+                  autoComplete="off"
+                >
+                  <Form.Group as={Row} className="mb-2">
+                    <Form.Label column sm={3}>
+                      Nama <i className="text-danger">*</i>
+                    </Form.Label>
+                    <Col sm={9}>
+                      <Form.Control
+                        type="text"
+                        required
+                        name="nama"
+                        placeholder="Nama"
+                        value={akunDetail.nama}
+                        onChange={(e) => handleChange(e)}
+                        autoComplete="off"
+                      />
+                    </Col>
+                  </Form.Group>
+                  <Form.Group as={Row} className="mb-2">
+                    <Form.Label column sm={3}>
+                      Username <i className="text-danger">*</i>
+                    </Form.Label>
+                    <Col sm={9}>
+                      <Form.Control
+                        type="text"
+                        required
+                        name="username"
+                        placeholder="Username"
+                        value={akunDetail.username}
+                        onChange={(e) => handleChange(e)}
+                        autoComplete="off"
+                      />
+                    </Col>
+                  </Form.Group>
+                  <Form.Group as={Row} className="mb-2">
+                    <Form.Label column sm={3}>
+                      password
+                    </Form.Label>
+                    <Col sm={9}>
+                      <Form.Control
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={akunDetail.password}
+                        onChange={(e) => handleChange(e)}
+                        autoComplete="off"
+                      />
+                    </Col>
+                  </Form.Group>
+                  <Form.Group as={Row} className="mb-2">
+                    <Form.Label column sm={3}>
+                      Role <i className="text-danger">*</i>
+                    </Form.Label>
+                    <Col sm={9}>
+                      <Form.Select
+                        aria-label="Default select example"
+                        name="role"
+                        value={akunDetail.role}
+                        onChange={(e) => handleChange(e)}
+                        autoComplete="off"
+                      >
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                        <option value="kasir">Kasir</option>
+                      </Form.Select>
+                    </Col>
+                  </Form.Group>
+                  <Form.Group as={Row} className="mb-2">
+                    <Form.Label column sm={3}>
+                      Nama Optik
+                    </Form.Label>
+                    <Col sm={9}>
+                      <Form.Select
+                        aria-label="Default select example"
+                        name="id_optik"
+                        value={akunDetail.id_optik}
+                        onChange={(e) => handleChange(e)}
+                        autoComplete="off"
+                      >
+                        <option value="" disabled>
+                          -- Nama Optik --
+                        </option>
+                        {dataOptik.map((item, index) => (
+                          <option key={index} value={item.id}>
+                            {item.nama_optik}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                  </Form.Group>
+                  <div className="d-flex justify-content-between">
+                    <div>
+                      <Button
+                        variant="danger"
+                        className="my-2"
+                        onClick={() => handleClickHapus(akunDetail.id)}
+                      >
+                        <Trash3Fill />
+                      </Button>
+                    </div>
+                    <div>
+                      <Button type="submit" className="float-end mt-2">
+                        Simpan
+                      </Button>
+                      <Button
+                        variant="default"
+                        className="float-end border me-2 my-2"
+                        onClick={() => setShowDetail(false)}
+                      >
+                        Batal
+                      </Button>
+                    </div>
+                  </div>
+                </Form>
+              </Card.Body>
+            </Card>
           </Container>
         </Col>
       </Row>

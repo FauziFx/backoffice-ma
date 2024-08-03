@@ -8,6 +8,7 @@ import {
   FloatingLabel,
   Modal,
   ListGroup,
+  Card,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -289,287 +290,296 @@ function TambahPenyesuaian({ closeButton, getDataPenyesuaian }) {
   return (
     <LoadingOverlay active={loadingSubmit} spinner={<PulseLoader />}>
       <Container>
-        <Row>
-          <Col
-            md={12}
-            sm={12}
-            className="overflow-y-scroll"
-            style={{ height: "550px" }}
-          >
-            <small className="mb-0">Informasi</small>
-            <hr style={{ margin: 0 }} />
-            <Form
-              className="mt-2"
-              id="formSubmitPenyesuaian"
-              onSubmit={handleSubmitPenyesuaian}
-            >
-              <Form.Group as={Row} className="mb-2">
-                <Form.Label column sm={3}>
-                  Catatan
-                </Form.Label>
-                <Col sm={9}>
-                  <FloatingLabel controlId="floatingTextarea2" label="Catatan">
-                    <Form.Control
-                      as="textarea"
-                      placeholder="Leave a comment here"
-                      style={{ height: "100px" }}
-                      name="catatan"
-                      value={catatan}
-                      onChange={(e) => setCatatan(e.target.value)}
-                    />
-                  </FloatingLabel>
-                </Col>
-              </Form.Group>
-
-              <small className="mb-0">Tabel Penyesuaian Stok</small>
-              <hr style={{ margin: 0 }} />
-
-              <Button
-                size="sm"
-                variant="success"
-                className="mt-2 ms-2 w-100"
-                onClick={handleShow}
+        <Card className="mt-1">
+          <Card.Body>
+            <Row>
+              <Col
+                md={12}
+                sm={12}
+                className="overflow-y-scroll"
+                style={{ height: "550px" }}
               >
-                Tambah Item
-              </Button>
+                <small className="mb-0">Informasi</small>
+                <hr style={{ margin: 0 }} />
+                <Form
+                  className="mt-2"
+                  id="formSubmitPenyesuaian"
+                  onSubmit={handleSubmitPenyesuaian}
+                >
+                  <Form.Group as={Row} className="mb-2">
+                    <Form.Label column sm={3}>
+                      Catatan
+                    </Form.Label>
+                    <Col sm={9}>
+                      <FloatingLabel
+                        controlId="floatingTextarea2"
+                        label="Catatan"
+                      >
+                        <Form.Control
+                          as="textarea"
+                          placeholder="Leave a comment here"
+                          style={{ height: "100px" }}
+                          name="catatan"
+                          value={catatan}
+                          onChange={(e) => setCatatan(e.target.value)}
+                        />
+                      </FloatingLabel>
+                    </Col>
+                  </Form.Group>
 
-              <Row className="mt-2 fw-semibold">
-                <Col sm={3}>Varian</Col>
-                <Col sm={3}>Stok Tersedia</Col>
-                <Col sm={3}>Stok Aktual</Col>
-                <Col sm={3}>Penyesuaian</Col>
-              </Row>
+                  <small className="mb-0">Tabel Penyesuaian Stok</small>
+                  <hr style={{ margin: 0 }} />
 
-              {dataPenyesuaian[0].nama_produk != ""
-                ? dataPenyesuaian.map((produk, produkIndex) => (
-                    <Row className="my-2 " key={produkIndex}>
-                      <Row>
-                        <div className="input-group">
-                          <Form.Control
-                            className="bg-white text-center fw-semibold"
-                            type="text"
-                            value={produk.nama_produk}
-                            style={{ cursor: "not-allowed" }}
-                            disabled
-                          />
-                          <span className="input-group-text bg-white rounded-0">
-                            <a
-                              href="#"
-                              className="text-danger"
-                              onClick={() =>
-                                handleDeletePenyesuaian(produkIndex)
-                              }
-                            >
-                              <XCircleFill />
-                            </a>
-                          </span>
-                        </div>
-                      </Row>
-                      {produk.varian.map((varian, varianIndex) => (
-                        <Row key={varianIndex}>
-                          <Col sm={3} className="pe-0">
-                            <Form.Control
-                              className="bg-white text-secondary"
-                              name="nama_varian"
-                              type="text"
-                              value={varian.nama_varian}
-                              onChange={(e) => handleChangePenyesuaian(e)}
-                              style={{ cursor: "not-allowed" }}
-                              disabled
-                            />
-                          </Col>
-                          <Col sm={3} className="px-0">
-                            <Form.Control
-                              className="bg-white text-secondary"
-                              name="stok_tersedia"
-                              type="number"
-                              value={varian.stok_tersedia}
-                              onChange={(e) => handleChangePenyesuaian(e)}
-                              style={{ cursor: "not-allowed" }}
-                              disabled
-                            />
-                          </Col>
-                          <Col sm={3} className="px-0">
-                            <Form.Control
-                              name="stok_aktual"
-                              value={varian.stok_aktual}
-                              onChange={(e) =>
-                                handleChangePenyesuaian(
-                                  e,
-                                  produk.id,
-                                  produkIndex,
-                                  varianIndex
-                                )
-                              }
-                              type="number"
-                              required
-                              onFocus={(e) =>
-                                e.target.addEventListener(
-                                  "wheel",
-                                  function (e) {
-                                    e.preventDefault();
-                                  },
-                                  { passive: false }
-                                )
-                              }
-                            />
-                          </Col>
-                          <Col sm={3} className="ps-0">
-                            <Form.Control
-                              className="bg-white text-secondary"
-                              name="penyesuaian"
-                              value={
-                                varian.penyesuaian > 0
-                                  ? "+" + "" + varian.penyesuaian
-                                  : varian.penyesuaian
-                              }
-                              onChange={(e) => handleChangePenyesuaian(e)}
-                              type="text"
-                              disabled
-                            />
-                          </Col>
+                  <Button
+                    size="sm"
+                    variant="success"
+                    className="mt-2 ms-2 w-100"
+                    onClick={handleShow}
+                  >
+                    Tambah Item
+                  </Button>
+
+                  <Row className="mt-2 fw-semibold">
+                    <Col sm={3}>Varian</Col>
+                    <Col sm={3}>Stok Tersedia</Col>
+                    <Col sm={3}>Stok Aktual</Col>
+                    <Col sm={3}>Penyesuaian</Col>
+                  </Row>
+
+                  {dataPenyesuaian[0].nama_produk != ""
+                    ? dataPenyesuaian.map((produk, produkIndex) => (
+                        <Row className="my-2 " key={produkIndex}>
+                          <Row>
+                            <div className="input-group">
+                              <Form.Control
+                                className="bg-white text-center fw-semibold"
+                                type="text"
+                                value={produk.nama_produk}
+                                style={{ cursor: "not-allowed" }}
+                                disabled
+                              />
+                              <span className="input-group-text bg-white rounded-0">
+                                <a
+                                  href="#"
+                                  className="text-danger"
+                                  onClick={() =>
+                                    handleDeletePenyesuaian(produkIndex)
+                                  }
+                                >
+                                  <XCircleFill />
+                                </a>
+                              </span>
+                            </div>
+                          </Row>
+                          {produk.varian.map((varian, varianIndex) => (
+                            <Row key={varianIndex}>
+                              <Col sm={3} className="pe-0">
+                                <Form.Control
+                                  className="bg-white text-secondary"
+                                  name="nama_varian"
+                                  type="text"
+                                  value={varian.nama_varian}
+                                  onChange={(e) => handleChangePenyesuaian(e)}
+                                  style={{ cursor: "not-allowed" }}
+                                  disabled
+                                />
+                              </Col>
+                              <Col sm={3} className="px-0">
+                                <Form.Control
+                                  className="bg-white text-secondary"
+                                  name="stok_tersedia"
+                                  type="number"
+                                  value={varian.stok_tersedia}
+                                  onChange={(e) => handleChangePenyesuaian(e)}
+                                  style={{ cursor: "not-allowed" }}
+                                  disabled
+                                />
+                              </Col>
+                              <Col sm={3} className="px-0">
+                                <Form.Control
+                                  name="stok_aktual"
+                                  value={varian.stok_aktual}
+                                  onChange={(e) =>
+                                    handleChangePenyesuaian(
+                                      e,
+                                      produk.id,
+                                      produkIndex,
+                                      varianIndex
+                                    )
+                                  }
+                                  type="number"
+                                  required
+                                  onFocus={(e) =>
+                                    e.target.addEventListener(
+                                      "wheel",
+                                      function (e) {
+                                        e.preventDefault();
+                                      },
+                                      { passive: false }
+                                    )
+                                  }
+                                />
+                              </Col>
+                              <Col sm={3} className="ps-0">
+                                <Form.Control
+                                  className="bg-white text-secondary"
+                                  name="penyesuaian"
+                                  value={
+                                    varian.penyesuaian > 0
+                                      ? "+" + "" + varian.penyesuaian
+                                      : varian.penyesuaian
+                                  }
+                                  onChange={(e) => handleChangePenyesuaian(e)}
+                                  type="text"
+                                  disabled
+                                />
+                              </Col>
+                            </Row>
+                          ))}
                         </Row>
-                      ))}
-                    </Row>
-                  ))
-                : ""}
-            </Form>
-          </Col>
-        </Row>
-        <Button
-          type="submit"
-          className="float-end my-2"
-          form="formSubmitPenyesuaian"
-          disabled={dataPenyesuaian[0].id === ""}
-        >
-          Simpan
-        </Button>
-        <Button
-          variant="default"
-          className="float-end border me-2 my-2"
-          onClick={() => {
-            closeButton();
-            setDataPenyesuaian([
-              {
-                id: "",
-                nama_produk: "",
-                varian: [
+                      ))
+                    : ""}
+                </Form>
+              </Col>
+            </Row>
+            <Button
+              type="submit"
+              className="float-end my-2"
+              form="formSubmitPenyesuaian"
+              disabled={dataPenyesuaian[0].id === ""}
+            >
+              Simpan
+            </Button>
+            <Button
+              variant="default"
+              className="float-end border me-2 my-2"
+              onClick={() => {
+                closeButton();
+                setDataPenyesuaian([
                   {
                     id: "",
-                    nama_varian: "",
-                    stok_tersedia: "",
-                    stok_aktual: "",
+                    nama_produk: "",
+                    varian: [
+                      {
+                        id: "",
+                        nama_varian: "",
+                        stok_tersedia: "",
+                        stok_aktual: "",
+                      },
+                    ],
                   },
-                ],
-              },
-            ]);
-          }}
-        >
-          Batal
-        </Button>
-
-        {/* Modal */}
-        <Modal show={showModal} onHide={handleClose} size="lg" scrollable>
-          <Modal.Header closeButton className="bg-primary">
-            <Modal.Title className="text-light">Tambah Item </Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="pt-2">
-            <Form.Control
-              type="text"
-              id="search-data"
-              value={searchInput}
-              onChange={(e) => handleChangeSearch(e)}
-              placeholder="Cari..."
-              autoFocus
-            />
-            <ListGroup
-              className={showListProduk ? "d-block mt-2 rounded-0" : "d-none"}
+                ]);
+              }}
             >
-              {dataProduk.map((item, index) => (
-                <ListGroup.Item
-                  className="mb-1"
-                  action
-                  key={index}
-                  onClick={() => handleClickRow(item.id)}
+              Batal
+            </Button>
+
+            {/* Modal */}
+            <Modal show={showModal} onHide={handleClose} size="lg" scrollable>
+              <Modal.Header closeButton className="bg-primary">
+                <Modal.Title className="text-light">Tambah Item </Modal.Title>
+              </Modal.Header>
+              <Modal.Body className="pt-2">
+                <Form.Control
+                  type="text"
+                  id="search-data"
+                  value={searchInput}
+                  onChange={(e) => handleChangeSearch(e)}
+                  placeholder="Cari..."
+                  autoFocus
+                />
+                <ListGroup
+                  className={
+                    showListProduk ? "d-block mt-2 rounded-0" : "d-none"
+                  }
                 >
-                  {item.nama_produk}
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-            <div className={showListVarian ? "d-block mt-2" : "d-none"}>
-              <Row className="mt-3">
-                <Col sm={12} className="fw-bold mb-2">
-                  {dataProdukDetail.nama_produk}
-                </Col>
-                <Col sm={6} className="fw-semibold text-center">
-                  Item
-                </Col>
-                <Col sm={3} className="fw-semibold text-center">
-                  Stok Tersedia
-                </Col>
-                <Col sm={3} className="fw-semibold text-center">
-                  Stok Aktual
-                </Col>
-                <Col sm={12}>
-                  <Form id="formDetail" onSubmit={handleAddItem}>
-                    {dataProdukDetail.varian.map((item, index) => (
-                      <Row key={index}>
-                        <Col sm={6} className="pe-0">
-                          <Form.Control
-                            className="bg-white text-secondary"
-                            name="nama_varian"
-                            type="text"
-                            value={item.nama_varian}
-                            onChange={(e) => handleChangeDetail(e, index)}
-                            style={{ cursor: "not-allowed" }}
-                            disabled
-                          />
-                        </Col>
-                        <Col sm={3} className="px-0">
-                          <Form.Control
-                            className="bg-white text-secondary"
-                            name="stok_tersedia"
-                            type="number"
-                            value={item.stok_tersedia}
-                            onChange={(e) => handleChangeDetail(e, index)}
-                            style={{ cursor: "not-allowed" }}
-                            disabled
-                          />
-                        </Col>
-                        <Col sm={3} className="ps-0">
-                          <Form.Control
-                            name="stok_aktual"
-                            value={item.stok_aktual}
-                            onChange={(e) => handleChangeDetail(e, index)}
-                            type="number"
-                            onFocus={(e) =>
-                              e.target.addEventListener(
-                                "wheel",
-                                function (e) {
-                                  e.preventDefault();
-                                },
-                                { passive: false }
-                              )
-                            }
-                            required
-                          />
-                        </Col>
-                      </Row>
-                    ))}
-                  </Form>
-                </Col>
-              </Row>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => handleClose()}>
-              Tutup
-            </Button>
-            <Button type="submit" form="formDetail">
-              Tambah
-            </Button>
-          </Modal.Footer>
-        </Modal>
+                  {dataProduk.map((item, index) => (
+                    <ListGroup.Item
+                      className="mb-1"
+                      action
+                      key={index}
+                      onClick={() => handleClickRow(item.id)}
+                    >
+                      {item.nama_produk}
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+                <div className={showListVarian ? "d-block mt-2" : "d-none"}>
+                  <Row className="mt-3">
+                    <Col sm={12} className="fw-bold mb-2">
+                      {dataProdukDetail.nama_produk}
+                    </Col>
+                    <Col sm={6} className="fw-semibold text-center">
+                      Item
+                    </Col>
+                    <Col sm={3} className="fw-semibold text-center">
+                      Stok Tersedia
+                    </Col>
+                    <Col sm={3} className="fw-semibold text-center">
+                      Stok Aktual
+                    </Col>
+                    <Col sm={12}>
+                      <Form id="formDetail" onSubmit={handleAddItem}>
+                        {dataProdukDetail.varian.map((item, index) => (
+                          <Row key={index}>
+                            <Col sm={6} className="pe-0">
+                              <Form.Control
+                                className="bg-white text-secondary"
+                                name="nama_varian"
+                                type="text"
+                                value={item.nama_varian}
+                                onChange={(e) => handleChangeDetail(e, index)}
+                                style={{ cursor: "not-allowed" }}
+                                disabled
+                              />
+                            </Col>
+                            <Col sm={3} className="px-0">
+                              <Form.Control
+                                className="bg-white text-secondary"
+                                name="stok_tersedia"
+                                type="number"
+                                value={item.stok_tersedia}
+                                onChange={(e) => handleChangeDetail(e, index)}
+                                style={{ cursor: "not-allowed" }}
+                                disabled
+                              />
+                            </Col>
+                            <Col sm={3} className="ps-0">
+                              <Form.Control
+                                name="stok_aktual"
+                                value={item.stok_aktual}
+                                onChange={(e) => handleChangeDetail(e, index)}
+                                type="number"
+                                onFocus={(e) =>
+                                  e.target.addEventListener(
+                                    "wheel",
+                                    function (e) {
+                                      e.preventDefault();
+                                    },
+                                    { passive: false }
+                                  )
+                                }
+                                required
+                              />
+                            </Col>
+                          </Row>
+                        ))}
+                      </Form>
+                    </Col>
+                  </Row>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => handleClose()}>
+                  Tutup
+                </Button>
+                <Button type="submit" form="formDetail">
+                  Tambah
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          </Card.Body>
+        </Card>
       </Container>
     </LoadingOverlay>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Form, Button, Row, Col } from "react-bootstrap";
+import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
 import { useNavigation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -69,50 +69,54 @@ function TambahPelanggan({ closeButton, getDataPelanggan }) {
   });
   return (
     <Container>
-      <small className="mb-0">Informasi</small>
-      <hr style={{ margin: 0 }} />
-      <Form className="mt-2" onSubmit={handleSubmit} autoComplete="off">
-        <Form.Group as={Row} className="mb-2">
-          <Form.Label column sm={3}>
-            Nama Pelanggan <i className="text-danger">*</i>
-          </Form.Label>
-          <Col sm={9}>
-            <Form.Control
-              type="text"
-              name="nama_pelanggan"
-              placeholder="Nama Pelanggan"
-              value={dataPelanggan.nama_pelanggan}
-              onChange={(e) => handleChange(e)}
-              autoComplete="off"
-            />
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="mb-2">
-          <Form.Label column sm={3}>
-            No Hp
-          </Form.Label>
-          <Col sm={9}>
-            <Form.Control
-              type="text"
-              name="nohp"
-              placeholder="No Hp"
-              value={dataPelanggan.nohp}
-              onChange={(e) => handleChange(e)}
-              autoComplete="off"
-            />
-          </Col>
-        </Form.Group>
-        <Button type="submit" className="float-end mt-2">
-          Simpan
-        </Button>
-        <Button
-          variant="default"
-          className="float-end border me-2 my-2"
-          onClick={closeButton}
-        >
-          Batal
-        </Button>
-      </Form>
+      <Card className="mt-1">
+        <Card.Body>
+          <small className="mb-0">Informasi</small>
+          <hr style={{ margin: 0 }} />
+          <Form className="mt-2" onSubmit={handleSubmit} autoComplete="off">
+            <Form.Group as={Row} className="mb-2">
+              <Form.Label column sm={3}>
+                Nama Pelanggan <i className="text-danger">*</i>
+              </Form.Label>
+              <Col sm={9}>
+                <Form.Control
+                  type="text"
+                  name="nama_pelanggan"
+                  placeholder="Nama Pelanggan"
+                  value={dataPelanggan.nama_pelanggan}
+                  onChange={(e) => handleChange(e)}
+                  autoComplete="off"
+                />
+              </Col>
+            </Form.Group>
+            <Form.Group as={Row} className="mb-2">
+              <Form.Label column sm={3}>
+                No Hp
+              </Form.Label>
+              <Col sm={9}>
+                <Form.Control
+                  type="text"
+                  name="nohp"
+                  placeholder="No Hp"
+                  value={dataPelanggan.nohp}
+                  onChange={(e) => handleChange(e)}
+                  autoComplete="off"
+                />
+              </Col>
+            </Form.Group>
+            <Button type="submit" className="float-end mt-2">
+              Simpan
+            </Button>
+            <Button
+              variant="default"
+              className="float-end border me-2 my-2"
+              onClick={closeButton}
+            >
+              Batal
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
     </Container>
   );
 }

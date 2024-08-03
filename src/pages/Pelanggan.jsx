@@ -7,6 +7,7 @@ import {
   Form,
   InputGroup,
   Table,
+  Card,
 } from "react-bootstrap";
 import { Search, Trash3Fill } from "react-bootstrap-icons";
 import TambahPelanggan from "../components/TambahPelanggan";
@@ -179,9 +180,9 @@ function Pelanggan() {
   });
   return (
     <Container className="pt-4">
-      <Row>
-        <Col>
-          <h3>Daftar Pelanggan</h3>
+      <Row className="p-2 text-white bg-primary shadow-sm mx-1">
+        <Col className="pt-1">
+          <h4 className="mb-0">Daftar Pelanggan</h4>
         </Col>
         <Col className=" d-none d-sm-none d-md-block">
           <Button onClick={() => handleShowTambah()} className="float-end">
@@ -208,26 +209,30 @@ function Pelanggan() {
               </InputGroup>
             </Col>
           </Row>
-          <Table hover size="md" responsive className="mt-2">
-            <thead>
-              <tr>
-                <th className="p-2 bg-light">#</th>
-                <th className="p-2 bg-light">Nama</th>
-                <th className="p-2 bg-light">No HP</th>
-                <th className="p-2 bg-light">Pelanggan Sejak</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataPelanggan.map((item, index) => (
-                <tr key={index} onClick={() => handleClickRow(item.id)}>
-                  <td>{index + 1}</td>
-                  <td>{item.nama_pelanggan}</td>
-                  <td>{item.nohp || "-"}</td>
-                  <td>{moment(item.tanggal).format("DD MMMM YYYY")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <Card className="mt-1">
+            <Card.Body>
+              <Table hover size="md" responsive className="mt-2">
+                <thead>
+                  <tr>
+                    <th className="p-2 bg-light">#</th>
+                    <th className="p-2 bg-light">Nama</th>
+                    <th className="p-2 bg-light">No HP</th>
+                    <th className="p-2 bg-light">Pelanggan Sejak</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dataPelanggan.map((item, index) => (
+                    <tr key={index} onClick={() => handleClickRow(item.id)}>
+                      <td>{index + 1}</td>
+                      <td>{item.nama_pelanggan}</td>
+                      <td>{item.nohp || "-"}</td>
+                      <td>{moment(item.tanggal).format("DD MMMM YYYY")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
         </Col>
         <Col md={6} className={showTambah ? "d-block" : "d-none"}>
           <TambahPelanggan
@@ -237,71 +242,79 @@ function Pelanggan() {
         </Col>
         <Col md={6} className={showDetail ? "d-block" : "d-none"}>
           <Container>
-            <small className="mb-0">Informasi</small>
-            <hr style={{ margin: 0 }} />
-            <Form className="mt-2" onSubmit={handleSubmit} autoComplete="off">
-              <Form.Group as={Row} className="mb-2">
-                <Form.Label column sm={3}>
-                  Nama Pelanggan <i className="text-danger">*</i>
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control
-                    type="text"
-                    placeholder="Nama Pelanggan"
-                    value={pelangganDetail.nama_pelanggan}
-                    onChange={(e) =>
-                      setPelangganDetail((prevState) => ({
-                        ...prevState,
-                        nama_pelanggan: e.target.value,
-                      }))
-                    }
-                    autoComplete="off"
-                  />
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-2">
-                <Form.Label column sm={3}>
-                  No Hp
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control
-                    type="text"
-                    placeholder="No Hp"
-                    value={pelangganDetail.nohp}
-                    onChange={(e) =>
-                      setPelangganDetail((prevState) => ({
-                        ...prevState,
-                        nohp: e.target.value || "",
-                      }))
-                    }
-                    autoComplete="off"
-                  />
-                </Col>
-              </Form.Group>
-              <div className="d-flex justify-content-between">
-                <div>
-                  <Button
-                    variant="danger"
-                    className="my-2"
-                    onClick={() => handleClickHapus(pelangganDetail.id)}
-                  >
-                    <Trash3Fill />
-                  </Button>
-                </div>
-                <div>
-                  <Button type="submit" className="float-end mt-2">
-                    Simpan
-                  </Button>
-                  <Button
-                    variant="default"
-                    className="float-end border me-2 my-2"
-                    onClick={() => setShowDetail(false)}
-                  >
-                    Batal
-                  </Button>
-                </div>
-              </div>
-            </Form>
+            <Card className="mt-1">
+              <Card.Body>
+                <small className="mb-0">Informasi</small>
+                <hr style={{ margin: 0 }} />
+                <Form
+                  className="mt-2"
+                  onSubmit={handleSubmit}
+                  autoComplete="off"
+                >
+                  <Form.Group as={Row} className="mb-2">
+                    <Form.Label column sm={3}>
+                      Nama Pelanggan <i className="text-danger">*</i>
+                    </Form.Label>
+                    <Col sm={9}>
+                      <Form.Control
+                        type="text"
+                        placeholder="Nama Pelanggan"
+                        value={pelangganDetail.nama_pelanggan}
+                        onChange={(e) =>
+                          setPelangganDetail((prevState) => ({
+                            ...prevState,
+                            nama_pelanggan: e.target.value,
+                          }))
+                        }
+                        autoComplete="off"
+                      />
+                    </Col>
+                  </Form.Group>
+                  <Form.Group as={Row} className="mb-2">
+                    <Form.Label column sm={3}>
+                      No Hp
+                    </Form.Label>
+                    <Col sm={9}>
+                      <Form.Control
+                        type="text"
+                        placeholder="No Hp"
+                        value={pelangganDetail.nohp}
+                        onChange={(e) =>
+                          setPelangganDetail((prevState) => ({
+                            ...prevState,
+                            nohp: e.target.value || "",
+                          }))
+                        }
+                        autoComplete="off"
+                      />
+                    </Col>
+                  </Form.Group>
+                  <div className="d-flex justify-content-between">
+                    <div>
+                      <Button
+                        variant="danger"
+                        className="my-2"
+                        onClick={() => handleClickHapus(pelangganDetail.id)}
+                      >
+                        <Trash3Fill />
+                      </Button>
+                    </div>
+                    <div>
+                      <Button type="submit" className="float-end mt-2">
+                        Simpan
+                      </Button>
+                      <Button
+                        variant="default"
+                        className="float-end border me-2 my-2"
+                        onClick={() => setShowDetail(false)}
+                      >
+                        Batal
+                      </Button>
+                    </div>
+                  </div>
+                </Form>
+              </Card.Body>
+            </Card>
           </Container>
         </Col>
       </Row>

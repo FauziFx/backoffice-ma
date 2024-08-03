@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { useNavigation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -66,34 +66,38 @@ function TambahKategori({ closeButton, getDataKategori }) {
 
   return (
     <Container>
-      <small className="mb-0">Kategori</small>
-      <hr style={{ margin: 0 }} />
-      <Form className="mt-2" onSubmit={handleSubmit}>
-        <Form.Group as={Row} className="mb-2">
-          <Form.Label column sm={3}>
-            Nama Kategori <i className="text-danger">*</i>
-          </Form.Label>
-          <Col sm={9}>
-            <Form.Control
-              type="text"
-              value={dataKategori.nama_kategori}
-              onChange={(e) => handleChange(e)}
-              required
-              placeholder="Nama Kategori"
-            />
-          </Col>
-        </Form.Group>
-        <Button type="submit" className="float-end mt-2">
-          Simpan
-        </Button>
-        <Button
-          variant="default"
-          className="float-end border me-2 my-2"
-          onClick={closeButton}
-        >
-          Batal
-        </Button>
-      </Form>
+      <Card className="mt-1">
+        <Card.Body>
+          <small className="mb-0">Kategori</small>
+          <hr style={{ margin: 0 }} />
+          <Form className="mt-2" onSubmit={handleSubmit}>
+            <Form.Group as={Row} className="mb-2">
+              <Form.Label column sm={3}>
+                Nama Kategori <i className="text-danger">*</i>
+              </Form.Label>
+              <Col sm={9}>
+                <Form.Control
+                  type="text"
+                  value={dataKategori.nama_kategori}
+                  onChange={(e) => handleChange(e)}
+                  required
+                  placeholder="Nama Kategori"
+                />
+              </Col>
+            </Form.Group>
+            <Button type="submit" className="float-end mt-2">
+              Simpan
+            </Button>
+            <Button
+              variant="default"
+              className="float-end border me-2 my-2"
+              onClick={closeButton}
+            >
+              Batal
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
     </Container>
   );
 }

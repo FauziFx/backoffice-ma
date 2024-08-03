@@ -3,7 +3,15 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import React, { useEffect, useState } from "react";
 import { DateRangePicker } from "react-date-range";
 import { addDays, format } from "date-fns";
-import { Container, Row, Col, Button, Dropdown, Table } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Dropdown,
+  Table,
+  Card,
+} from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import TambahPenyesuaian from "../components/TambahPenyesuaian";
 import { useNavigate } from "react-router-dom";
@@ -93,6 +101,7 @@ function PenyesuaianStok() {
 
   const handleClickRow = async (id) => {
     setShowDetail(true);
+    setShowTambah(false);
     const data = dataPenyesuaian.filter((item) => item.id == id)[0];
     setDataDetail(data);
   };
@@ -103,13 +112,13 @@ function PenyesuaianStok() {
 
   return (
     <Container className="pt-4">
-      <Row>
-        <Col>
-          <h3>Penyesuaian Stok</h3>
+      <Row className="p-2 text-white bg-primary shadow-sm mx-1">
+        <Col className="pt-1">
+          <h4 className="mb-0">Penyesuaian Stok</h4>
         </Col>
         <Col className=" d-none d-sm-none d-md-block">
           <span className="float-end">
-            <Dropdown className="btn-group me-1" role="group">
+            {/* <Dropdown className="btn-group me-1" role="group">
               <Dropdown.Toggle variant="primary" id="dropdown-basic">
                 Import / Export
               </Dropdown.Toggle>
@@ -118,7 +127,7 @@ function PenyesuaianStok() {
                 <Dropdown.Item href="#/action-1">Import Data</Dropdown.Item>
                 <Dropdown.Item href="#/action-2">Export Data</Dropdown.Item>
               </Dropdown.Menu>
-            </Dropdown>
+            </Dropdown> */}
             <Button onClick={() => handleShowTambah()}>Tambah</Button>
           </span>
         </Col>
@@ -182,34 +191,38 @@ function PenyesuaianStok() {
               </Dropdown>
             </Col>
           </Row>
-          <Table hover size="md" responsive className="mt-2">
-            <thead>
-              <tr>
-                <th className="p-2 bg-light">Tanggal</th>
-                <th className="p-2 bg-light">Catatan</th>
-                <th className="p-2 bg-light">Produk</th>
-                <th className="p-2 bg-light">Penyesuaian</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataPenyesuaian.map((item, index) => (
-                <tr key={index} onClick={() => handleClickRow(item.id)}>
-                  <td>
-                    {moment
-                      .tz(item.tanggal, "Asia/Jakarta")
-                      .format("DD MMM YYYY, LT")}
-                  </td>
-                  <td>{item.catatan || "-"}</td>
-                  <td>{item.nama_produk}</td>
-                  <td>
-                    {item.penyesuaian > 0
-                      ? "+" + item.penyesuaian
-                      : item.penyesuaian}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <Card className="mt-1">
+            <Card.Body>
+              <Table hover size="md" responsive className="mt-2">
+                <thead>
+                  <tr>
+                    <th className="p-2 bg-light">Tanggal</th>
+                    <th className="p-2 bg-light">Catatan</th>
+                    <th className="p-2 bg-light">Produk</th>
+                    <th className="p-2 bg-light">Penyesuaian</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dataPenyesuaian.map((item, index) => (
+                    <tr key={index} onClick={() => handleClickRow(item.id)}>
+                      <td>
+                        {moment
+                          .tz(item.tanggal, "Asia/Jakarta")
+                          .format("DD MMM YYYY, LT")}
+                      </td>
+                      <td>{item.catatan || "-"}</td>
+                      <td>{item.nama_produk}</td>
+                      <td>
+                        {item.penyesuaian > 0
+                          ? "+" + item.penyesuaian
+                          : item.penyesuaian}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
         </Col>
         <Col md={6} className={showTambah ? "d-block" : "d-none"}>
           <TambahPenyesuaian
@@ -219,71 +232,75 @@ function PenyesuaianStok() {
         </Col>
         <Col md={6} className={showDetail ? "d-block" : "d-none"}>
           <Container>
-            <Row>
-              <Col
-                md={12}
-                sm={12}
-                className="overflow-y-scroll"
-                style={{ height: "550px" }}
-              >
-                <small className="mb-0">Informasi</small>
-                <hr style={{ margin: 0 }} />
-                <br />
-                <Row className="mb-2">
-                  <Col sm={2}>Tanggal</Col>
-                  <Col sm={10} className="text-end">
-                    {moment
-                      .tz(dataDetail.tanggal, "Asia/Jakarta")
-                      .format("DD MMM YYYY, LT")}
+            <Card className="mt-1">
+              <Card.Body>
+                <Row>
+                  <Col
+                    md={12}
+                    sm={12}
+                    className="overflow-y-scroll"
+                    style={{ height: "550px" }}
+                  >
+                    <small className="mb-0">Informasi</small>
+                    <hr style={{ margin: 0 }} />
+                    <br />
+                    <Row className="mb-2">
+                      <Col sm={2}>Tanggal</Col>
+                      <Col sm={10} className="text-end">
+                        {moment
+                          .tz(dataDetail.tanggal, "Asia/Jakarta")
+                          .format("DD MMM YYYY, LT")}
+                      </Col>
+                    </Row>
+                    <hr style={{ margin: 0 }} />
+                    <Row className="my-2">
+                      <Col sm={2}>Catatan</Col>
+                      <Col sm={10} className="text-end">
+                        {dataDetail.catatan || "-"}
+                      </Col>
+                    </Row>
+                    <hr style={{ margin: 0 }} />
+                    <br />
+                    <br />
+                    <small className="mb-0 mt-4">Penyesuaian Stok</small>
+                    <hr style={{ margin: 0 }} />
+                    <br />
+                    <h6>{dataDetail.nama_produk}</h6>
+                    <Row className="mt-2">
+                      <Col sm={4} className="text-center">
+                        Stok Tersedia
+                      </Col>
+                      <Col sm={4} className="text-center">
+                        Stok Aktual
+                      </Col>
+                      <Col sm={4} className="text-center">
+                        Penyesuaian
+                      </Col>
+                    </Row>
+                    <hr style={{ margin: 0 }} />
+                    <Row className="mt-2 fw-light">
+                      <Col sm={4} className="text-center">
+                        {dataDetail.stok_tersedia}
+                      </Col>
+                      <Col sm={4} className="text-center">
+                        {dataDetail.stok_aktual}
+                      </Col>
+                      <Col sm={4} className="text-center">
+                        {dataDetail.penyesuaian}
+                      </Col>
+                    </Row>
+                    <hr style={{ margin: 0 }} />
                   </Col>
                 </Row>
-                <hr style={{ margin: 0 }} />
-                <Row className="my-2">
-                  <Col sm={2}>Catatan</Col>
-                  <Col sm={10} className="text-end">
-                    {dataDetail.catatan || "-"}
-                  </Col>
-                </Row>
-                <hr style={{ margin: 0 }} />
-                <br />
-                <br />
-                <small className="mb-0 mt-4">Penyesuaian Stok</small>
-                <hr style={{ margin: 0 }} />
-                <br />
-                <h6>{dataDetail.nama_produk}</h6>
-                <Row className="mt-2">
-                  <Col sm={4} className="text-center">
-                    Stok Tersedia
-                  </Col>
-                  <Col sm={4} className="text-center">
-                    Stok Aktual
-                  </Col>
-                  <Col sm={4} className="text-center">
-                    Penyesuaian
-                  </Col>
-                </Row>
-                <hr style={{ margin: 0 }} />
-                <Row className="mt-2 fw-light">
-                  <Col sm={4} className="text-center">
-                    {dataDetail.stok_tersedia}
-                  </Col>
-                  <Col sm={4} className="text-center">
-                    {dataDetail.stok_aktual}
-                  </Col>
-                  <Col sm={4} className="text-center">
-                    {dataDetail.penyesuaian}
-                  </Col>
-                </Row>
-                <hr style={{ margin: 0 }} />
-              </Col>
-            </Row>
-            <Button
-              variant="default"
-              className="border"
-              onClick={() => setShowDetail(false)}
-            >
-              Tutup
-            </Button>
+                <Button
+                  variant="default"
+                  className="border"
+                  onClick={() => setShowDetail(false)}
+                >
+                  Tutup
+                </Button>
+              </Card.Body>
+            </Card>
           </Container>
         </Col>
       </Row>
