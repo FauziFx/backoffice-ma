@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Table, Card } from "react-bootstrap";
+import { Table, Card, Alert } from "react-bootstrap";
 import { FormatRupiah } from "@arismun/format-rupiah";
 import moment from "moment-timezone";
 import "moment/dist/locale/id";
@@ -18,11 +18,12 @@ function LaporanRingkas({
   const [dataExportMagrup, setDataExportMaGrup] = useState();
   const [dataExportTotal, setDataExportTotal] = useState();
   const [fileName, setFileName] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
   const setData = useMemo(() => {
     let customHeadings = dataMagrup.map((item, i) => ({
       No: i + 1,
       "Nama Optik": item.nama_pelanggan,
-      "Biaya Lab": item.total,
+      "Biaya Lab": parseInt(item.total),
     }));
     customHeadings.push(
       {
@@ -31,7 +32,7 @@ function LaporanRingkas({
       },
       {
         "Nama Optik": "TOTAL",
-        "Biaya Lab": dataMagrupTotal,
+        "Biaya Lab": parseInt(dataMagrupTotal),
       }
     );
     setDataExportMaGrup(customHeadings);
@@ -50,9 +51,26 @@ function LaporanRingkas({
       "MA GRUP": parseInt(item.magrup),
     }));
     setDataExportTotal(headingTotal);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 7000);
   }, [data, startDate, endDate]);
   return (
     <>
+      <Alert
+        show={showAlert}
+        variant="info"
+        onClose={() => setShowAlert(false)}
+        dismissible
+      >
+        <Alert.Heading>Informasi !</Alert.Heading>
+        <p className="mb-1">
+          Sekarang udah bisa export datanya ke Excel (Grosir, Eceran, Biaya Lab){" "}
+          <br />
+          (Klik Download!!)
+        </p>
+      </Alert>
       <Card className="mt-1">
         <Card.Body>
           <div className="text-end mb-2">

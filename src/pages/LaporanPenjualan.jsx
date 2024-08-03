@@ -267,7 +267,7 @@ function LaporanPenjualan() {
           Tanggal: moment(item.tanggal)
             .tz("Asia/Jakarta")
             .format("DD MMMM YYYY"),
-          Total: item.total,
+          Total: parseInt(item.total),
         }));
         data.push(
           {
@@ -278,7 +278,7 @@ function LaporanPenjualan() {
             Total:
               MAkarangsembung.data.data === undefined
                 ? 0
-                : MAkarangsembung.data.data.total,
+                : parseInt(MAkarangsembung.data.data.total),
           },
           {
             Tanggal:
@@ -286,7 +286,9 @@ function LaporanPenjualan() {
                 ? "MA SINDANG"
                 : MAsindang.data.data.nama_pelanggan,
             Total:
-              MAsindang.data.data === undefined ? 0 : MAsindang.data.data.total,
+              MAsindang.data.data === undefined
+                ? 0
+                : parseInt(MAsindang.data.data.total),
           },
           {
             Tanggal:
@@ -294,7 +296,9 @@ function LaporanPenjualan() {
                 ? "SANDANG MATA"
                 : MAsandang.data.data.nama_pelanggan,
             Total:
-              MAsandang.data.data === undefined ? 0 : MAsandang.data.data.total,
+              MAsandang.data.data === undefined
+                ? 0
+                : parseInt(MAsandang.data.data.total),
           }
         );
         let totalLaporan = data.reduce(function (prev, current) {
@@ -311,7 +315,7 @@ function LaporanPenjualan() {
           },
           {
             Tanggal: "TOTAL",
-            Total: totalLaporan,
+            Total: parseInt(totalLaporan),
           }
         );
         setDataExportGrosir(data);
