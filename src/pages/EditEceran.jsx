@@ -150,9 +150,9 @@ function EditEceran() {
 
   return (
     <Container className="pt-4 pb-4">
-      <Row>
-        <Col>
-          <h3>Edit Eceran</h3>
+      <Row className="p-2 text-white bg-primary shadow-sm mx-1">
+        <Col className="pt-1">
+          <h4 className="mb-0">Edit Eceran</h4>
         </Col>
       </Row>
 

@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Button, Form, InputGroup } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Form,
+  InputGroup,
+  Card,
+} from "react-bootstrap";
 import { Search, PencilSquare, Trash3Fill } from "react-bootstrap-icons";
 import axios from "axios";
 import LoadingOverlay from "react-loading-overlay-ts";
@@ -154,9 +162,9 @@ function Eceran() {
 
   return (
     <Container className="pt-4">
-      <Row>
-        <Col>
-          <h3>Eceran</h3>
+      <Row className="p-2 text-white bg-primary shadow-sm mx-1">
+        <Col className="pt-1">
+          <h4 className="mb-0">Eceran</h4>
         </Col>
         <Col>
           <span className="float-end">
@@ -184,18 +192,22 @@ function Eceran() {
             </Col>
           </Row>
           <LoadingOverlay active={loadingData} spinner={<PulseLoader />}>
-            <DataTable
-              className="mw-100"
-              columns={columns}
-              data={filter}
-              pagination
-              highlightOnHover
-              paginationPerPage={20}
-              onRowClicked={(row) =>
-                navigate("/eceran/detail", { state: { row } })
-              }
-              customStyles={tableCustomStyles}
-            />
+            <Card className="mt-1 mb-2">
+              <Card.Body>
+                <DataTable
+                  className="mw-100"
+                  columns={columns}
+                  data={filter}
+                  pagination
+                  highlightOnHover
+                  paginationPerPage={20}
+                  onRowClicked={(row) =>
+                    navigate("/eceran/detail", { state: { row } })
+                  }
+                  customStyles={tableCustomStyles}
+                />
+              </Card.Body>
+            </Card>
           </LoadingOverlay>
         </Col>
       </Row>
