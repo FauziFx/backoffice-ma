@@ -22,6 +22,7 @@ import Eceran from "./pages/Eceran";
 import TambahEceran from "./pages/TambahEceran";
 import EditEceran from "./pages/EditEceran";
 import DetailEceran from "./pages/DetailEceran";
+import CetakBarcode from "./pages/CetakBarcode";
 
 function App() {
   const [user, setUser] = useState({});
@@ -82,6 +83,10 @@ function App() {
             {
               path: "/produk/penyesuaian-stok",
               element: <PenyesuaianStok />,
+            },
+            {
+              path: "/produk/cetak-barcode",
+              element: <CetakBarcode />,
             },
             {
               path: "/laporan/penjualan",

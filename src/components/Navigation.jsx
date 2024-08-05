@@ -1,4 +1,3 @@
-import { Dropdown } from "bootstrap";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, Outlet } from "react-router-dom";
 import Cookies from "universal-cookie";
@@ -53,6 +52,13 @@ function Navigation({ dataUser }) {
                   onClick={() => onClickMenu()}
                 >
                   Penyesuaian Stok
+                </Link>
+                <Link
+                  to="produk/cetak-barcode"
+                  className="dropdown-item"
+                  onClick={() => onClickMenu()}
+                >
+                  Cetak Barcode
                 </Link>
               </NavDropdown>
               <NavDropdown title="Laporan" id="basic-nav-dropdown">
