@@ -8,6 +8,7 @@ import {
   InputGroup,
   Card,
   Modal,
+  FormControl,
 } from "react-bootstrap";
 import LoadingOverlay from "react-loading-overlay-ts";
 import PulseLoader from "react-spinners/PulseLoader";
@@ -18,10 +19,12 @@ import {
   faBarcode,
   faCircleXmark,
   faCircleCheck,
+  faPrint,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import DataTable from "react-data-table-component";
+import Barcode from "react-barcode";
 
 function CetakBarcode() {
   const API = import.meta.env.VITE_API_URL;
@@ -32,7 +35,12 @@ function CetakBarcode() {
   const [selectKategori, setSelectKategori] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [loadingData, setLoadingData] = useState(true);
+  const [loadingDataVarian, setLoadingDataVarian] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [dataVarian, setDataVarian] = useState([]);
+  const [totalSelected, setTotalSelected] = useState(0);
+  const [dataSelected, setDataSelected] = useState([]);
+  const [step2, setStep2] = useState(false);
 
   const columns = [
     {
@@ -52,14 +60,30 @@ function CetakBarcode() {
     },
   ];
 
-  const getDataProduk = async (kategori, search) => {
+  const columnsVarian = [
+    {
+      name: "Kode",
+      selector: (row) => (
+        <Barcode value={row.kode} height={18} width={1} fontSize={11} />
+      ),
+      sortable: true,
+    },
+    {
+      name: "Nama Produk",
+      selector: (row) => row.nama,
+      sortable: true,
+    },
+    {
+      name: "Varian",
+      selector: (row) => row.nama_varian,
+      sortable: true,
+    },
+  ];
+
+  const getDataProduk = async () => {
     try {
       const URL = API + "produk";
       const response = await axios.get(URL, {
-        params: {
-          kategori: kategori,
-          search: search,
-        },
         headers: {
           Authorization: localStorage.getItem("user-token"),
         },
@@ -94,6 +118,42 @@ function CetakBarcode() {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const getDataVarian = async (id_produk) => {
+    try {
+      const URL = API + "produk/" + id_produk;
+      const response = await axios.get(URL, {
+        headers: {
+          Authorization: localStorage.getItem("user-token"),
+        },
+      });
+      if (response.data.message == "invalid token") {
+        localStorage.clear();
+        return navigate("/login");
+      } else {
+        const data = response.data.data;
+
+        setDataVarian(data.varian);
+        setLoadingDataVarian(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleClickRow = (id) => {
+    getDataVarian(id);
+    setShowModal(true);
+  };
+
+  const handleChangeSelectItem = ({ selectedRows }) => {
+    setTotalSelected(selectedRows.length);
+    setDataSelected(selectedRows);
+  };
+
+  const handleDataPrint = () => {
+    setStep2(true);
   };
 
   useEffect(() => {
@@ -170,7 +230,7 @@ function CetakBarcode() {
                   highlightOnHover
                   pagination
                   customStyles={tableCustomStyles}
-                  onRowClicked={(row) => setShowModal(true)}
+                  onRowClicked={(row) => handleClickRow(row.id)}
                 />
               </LoadingOverlay>
             </Card.Body>
@@ -194,49 +254,191 @@ function CetakBarcode() {
         <Modal.Body>
           <Row>
             {/* Navigation */}
-            <Col md={3}>
+            <Col md={2} className="pe-0">
               <Button
                 variant="outline-primary"
                 className="active text-start w-75 mb-2"
               >
                 1. Pilih Item
               </Button>
-              {/* <FontAwesomeIcon
-                icon={faCircleCheck}
-                className="text-success ms-2"
-                size="2x"
-              /> */}
-              <FontAwesomeIcon
-                icon={faCircleXmark}
-                className="text-danger ms-2"
-                size="2x"
-              />
+              {totalSelected > 0 ? (
+                <FontAwesomeIcon
+                  icon={faCircleCheck}
+                  className="text-success ms-2"
+                  size="2x"
+                />
+              ) : (
+                <FontAwesomeIcon
+                  icon={faCircleXmark}
+                  className="text-danger ms-2"
+                  size="2x"
+                />
+              )}
               <Button
-                variant="outline-dark"
-                className="text-start w-75 mb-2 disabled"
+                variant="outline-primary"
+                className={
+                  step2
+                    ? "text-start w-75 mb-2 active"
+                    : "text-start w-75 mb-2 disabled"
+                }
               >
                 2. Cetak Barcode
               </Button>
+              {step2 && (
+                <>
+                  <FontAwesomeIcon
+                    icon={faCircleCheck}
+                    className="text-success ms-2"
+                    size="2x"
+                  />
+                  <br />
+                  <div style={{ fontSize: "12px" }}>
+                    <span className="fw-bold">Ukuran Kertas :</span>
+                    <div>A4</div>
+                    <span className="fw-bold">Barcode per item :</span>
+                    <div>
+                      <FormControl
+                        type="number"
+                        value="1"
+                        onFocus={(e) =>
+                          e.target.addEventListener(
+                            "wheel",
+                            function (e) {
+                              e.preventDefault();
+                            },
+                            { passive: false }
+                          )
+                        }
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </Col>
             {/* Content */}
-            <Col md={9}>
-              <div className="d-flex justify-content-between">
-                <div>
-                  <Button
-                    variant="danger"
-                    onClick={() => setShowModal(false)}
-                    size="sm"
+            {!step2 ? (
+              <Col md={10}>
+                <div className="d-flex justify-content-between">
+                  <div>
+                    <Button
+                      variant="danger"
+                      onClick={() => setShowModal(false)}
+                      size="sm"
+                    >
+                      Batal
+                    </Button>
+                  </div>
+                  <div>{totalSelected}&nbsp;Item</div>
+                  <div>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      disabled={totalSelected == 0}
+                      onClick={() => handleDataPrint()}
+                    >
+                      Selanjutnya{" "}
+                      <FontAwesomeIcon icon={faArrowAltCircleRight} />
+                    </Button>
+                  </div>
+                </div>
+                <div
+                  className="overflow-y-scroll mt-2"
+                  style={{ height: "550px" }}
+                >
+                  <LoadingOverlay
+                    active={loadingDataVarian}
+                    spinner={<PulseLoader />}
                   >
-                    Batal
-                  </Button>
+                    {/* DataTables */}
+                    <DataTable
+                      className="mw-100"
+                      columns={columnsVarian}
+                      data={dataVarian}
+                      highlightOnHover
+                      selectableRows
+                      onSelectedRowsChange={handleChangeSelectItem}
+                      customStyles={tableCustomStyles}
+                    />
+                  </LoadingOverlay>
                 </div>
-                <div>
-                  <Button variant="primary" size="sm">
-                    Selanjutnya <FontAwesomeIcon icon={faArrowAltCircleRight} />
-                  </Button>
+              </Col>
+            ) : (
+              <Col md={10} className="ps-0">
+                <div className="d-flex justify-content-between">
+                  <div>
+                    <Button
+                      variant="danger"
+                      onClick={() => {
+                        setStep2(false);
+                        setDataSelected([]);
+                        setTotalSelected(0);
+                      }}
+                      size="sm"
+                    >
+                      Kembali
+                    </Button>
+                  </div>
+                  <div>{totalSelected}&nbsp;Item</div>
+                  <div>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      disabled={totalSelected == 0}
+                      onClick={() => handleDataPrint()}
+                    >
+                      Print <FontAwesomeIcon icon={faPrint} />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </Col>
+                <div
+                  className="overflow-y-scroll bg-dark mt-2"
+                  style={{ height: "550px" }}
+                >
+                  <div
+                    className="media-print bg-white"
+                    style={{
+                      width: "210mm",
+                      padding: "5mm",
+                      margin: "10px auto",
+                    }}
+                  >
+                    {dataSelected.map((item, index) => (
+                      <table key={index} className="d-inline mx-3">
+                        <tr>
+                          <td
+                            className="p-0 text-center"
+                            style={{ fontSize: "7px" }}
+                          >
+                            {item.nama}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-0 text-center">
+                            <Barcode
+                              value={item.kode}
+                              height={18}
+                              width={1.2}
+                              fontSize={7}
+                              textMargin={1}
+                              displayValue={false}
+                              margin={1}
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            className="p-0 text-center"
+                            style={{ fontSize: "7px" }}
+                          >
+                            {item.kode}&nbsp;{item.nama_varian}
+                          </td>
+                        </tr>
+                      </table>
+                    ))}
+                  </div>
+                </div>
+              </Col>
+            )}
           </Row>
         </Modal.Body>
       </Modal>

@@ -163,5 +163,24 @@ input::-webkit-inner-spin-button {
 }
 
 .modal-full .modal-body {
-  min-height: 90vh;
+  min-height: 85vh;
+}
+
+@media print {
+  .media-prtin {
+    width: 210mm;
+  }
+  /* ... the rest of the rules ... */
+}
+
+@media (min-width: 992px) {
+  .modal-xl {
+    --bs-modal-width: 1300px !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .modal-xl {
+    --bs-modal-width: 1400px !important;
+  }
 }
