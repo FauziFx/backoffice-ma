@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Container,
   Row,
@@ -25,6 +25,8 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import Barcode from "react-barcode";
+import ComponentToPrintBarcode from "../components/ComponentToPrintBarcode";
+import ReactToPrint, { useReactToPrint } from "react-to-print";
 
 function CetakBarcode() {
   const API = import.meta.env.VITE_API_URL;
@@ -41,6 +43,12 @@ function CetakBarcode() {
   const [totalSelected, setTotalSelected] = useState(0);
   const [dataSelected, setDataSelected] = useState([]);
   const [step2, setStep2] = useState(false);
+
+  // Print Document
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
 
   const columns = [
     {
@@ -298,6 +306,7 @@ function CetakBarcode() {
                     <span className="fw-bold">Barcode per item :</span>
                     <div>
                       <FormControl
+                        readOnly
                         type="number"
                         value="1"
                         onFocus={(e) =>
@@ -380,62 +389,32 @@ function CetakBarcode() {
                   </div>
                   <div>{totalSelected}&nbsp;Item</div>
                   <div>
-                    <Button
+                    {/* <Button
                       variant="primary"
                       size="sm"
                       disabled={totalSelected == 0}
-                      onClick={() => handleDataPrint()}
+                      onClick={handlePrint}
                     >
                       Print <FontAwesomeIcon icon={faPrint} />
-                    </Button>
+                    </Button> */}
+                    <ReactToPrint
+                      trigger={() => (
+                        <Button variant="primary" size="sm">
+                          Cetak <FontAwesomeIcon icon={faPrint} />
+                        </Button>
+                      )}
+                      content={() => componentRef.current}
+                    />
                   </div>
                 </div>
                 <div
                   className="overflow-y-scroll bg-dark mt-2"
                   style={{ height: "550px" }}
                 >
-                  <div
-                    className="media-print bg-white"
-                    style={{
-                      width: "210mm",
-                      padding: "5mm",
-                      margin: "10px auto",
-                    }}
-                  >
-                    {dataSelected.map((item, index) => (
-                      <table key={index} className="d-inline mx-3">
-                        <tr>
-                          <td
-                            className="p-0 text-center"
-                            style={{ fontSize: "7px" }}
-                          >
-                            {item.nama}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-0 text-center">
-                            <Barcode
-                              value={item.kode}
-                              height={18}
-                              width={1.2}
-                              fontSize={7}
-                              textMargin={1}
-                              displayValue={false}
-                              margin={1}
-                            />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td
-                            className="p-0 text-center"
-                            style={{ fontSize: "7px" }}
-                          >
-                            {item.kode}&nbsp;{item.nama_varian}
-                          </td>
-                        </tr>
-                      </table>
-                    ))}
-                  </div>
+                  <ComponentToPrintBarcode
+                    ref={componentRef}
+                    dataPrint={dataSelected}
+                  />
                 </div>
               </Col>
             )}
