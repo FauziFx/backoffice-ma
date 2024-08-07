@@ -68,7 +68,7 @@ function Login() {
   }, []);
 
   return (
-    <section className="h-100">
+    <section className="h-100 title-page">
       <Container className="h-100">
         <Row className="justify-content-sm-center h-100">
           <Col sm={9} md={7} lg={5} xl={5} xxl={4}>

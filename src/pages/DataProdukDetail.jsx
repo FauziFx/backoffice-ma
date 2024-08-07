@@ -88,7 +88,7 @@ function DataProdukDetail() {
   }, []);
 
   return (
-    <Container className="pt-4">
+    <Container className="pt-4 title-page">
       <Row>
         <Row>
           <Col md={6} sm={12}>

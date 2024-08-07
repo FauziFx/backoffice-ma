@@ -3,7 +3,7 @@ import { Container, Row, Col } from "react-bootstrap";
 
 function PengaturanNota() {
   return (
-    <Container className="pt-4">
+    <Container className="pt-4 title-page">
       <Row>
         <Col>
           <h3>Pengaturan Nota</h3>

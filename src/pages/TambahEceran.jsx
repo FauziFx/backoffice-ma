@@ -168,7 +168,7 @@ function TambahEceran() {
   }, []);
 
   return (
-    <Container className="pt-4 pb-4">
+    <Container className="pt-4 pb-4 title-page">
       <Row className="p-2 text-white bg-primary shadow-sm mx-1">
         <Col className="pt-1">
           <h4 className="mb-0">Tambah Eceran</h4>
