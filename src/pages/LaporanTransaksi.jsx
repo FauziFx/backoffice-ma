@@ -184,6 +184,7 @@ function LaporanTransaksi() {
                 showSelectionPreview={true}
                 moveRangeOnFirstSelection={false}
                 ranges={state}
+                maxDate={new Date()}
                 direction="horizontal"
               />
               <Row className="px-4">
