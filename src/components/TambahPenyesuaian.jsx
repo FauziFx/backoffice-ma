@@ -409,15 +409,16 @@ function TambahPenyesuaian({ closeButton, getDataPenyesuaian }) {
                                   }
                                   type="number"
                                   required
-                                  onFocus={(e) =>
+                                  onFocus={(e) => {
+                                    e.target.select();
                                     e.target.addEventListener(
                                       "wheel",
                                       function (e) {
                                         e.preventDefault();
                                       },
                                       { passive: false }
-                                    )
-                                  }
+                                    );
+                                  }}
                                 />
                               </Col>
                               <Col sm={3} className="ps-0">
@@ -550,15 +551,16 @@ function TambahPenyesuaian({ closeButton, getDataPenyesuaian }) {
                                 value={item.stok_aktual}
                                 onChange={(e) => handleChangeDetail(e, index)}
                                 type="number"
-                                onFocus={(e) =>
+                                onFocus={(e) => {
+                                  e.target.select();
                                   e.target.addEventListener(
                                     "wheel",
                                     function (e) {
                                       e.preventDefault();
                                     },
                                     { passive: false }
-                                  )
-                                }
+                                  );
+                                }}
                                 required
                               />
                             </Col>
