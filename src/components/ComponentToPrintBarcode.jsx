@@ -9,7 +9,7 @@ const ComponentToPrintBarcode = forwardRef(function MyInput(props, ref) {
         className="media-print bg-white"
         style={{
           width: "210mm",
-          margin: "0 auto",
+          margin: "10px auto",
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
         }}
@@ -29,7 +29,7 @@ const ComponentToPrintBarcode = forwardRef(function MyInput(props, ref) {
 
 function ComponentBarcode({ nama, kode, varian }) {
   return (
-    <table className="mb-4">
+    <table style={{ marginBottom: "15px" }}>
       <tbody>
         <tr>
           <td className="p-0 text-center" style={{ fontSize: "11px" }}>

@@ -389,14 +389,6 @@ function CetakBarcode() {
                   </div>
                   <div>{totalSelected}&nbsp;Item</div>
                   <div>
-                    {/* <Button
-                      variant="primary"
-                      size="sm"
-                      disabled={totalSelected == 0}
-                      onClick={handlePrint}
-                    >
-                      Print <FontAwesomeIcon icon={faPrint} />
-                    </Button> */}
                     <ReactToPrint
                       trigger={() => (
                         <Button variant="primary" size="sm">
