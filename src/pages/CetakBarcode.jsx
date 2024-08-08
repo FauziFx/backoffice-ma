@@ -42,7 +42,9 @@ function CetakBarcode() {
   const [dataVarian, setDataVarian] = useState([]);
   const [totalSelected, setTotalSelected] = useState(0);
   const [dataSelected, setDataSelected] = useState([]);
+  const [dataSelectedFilter, setDataSelectedFilter] = useState([]);
   const [step2, setStep2] = useState(false);
+  const [duplicate, setDuplicate] = useState(1);
 
   // Print Document
   const componentRef = useRef();
@@ -158,10 +160,37 @@ function CetakBarcode() {
   const handleChangeSelectItem = ({ selectedRows }) => {
     setTotalSelected(selectedRows.length);
     setDataSelected(selectedRows);
+    setDataSelectedFilter(selectedRows);
   };
 
   const handleDataPrint = () => {
     setStep2(true);
+  };
+
+  const handleChangeDuplicate = (e) => {
+    const value =
+      parseInt(e.target.value) > parseInt(e.target.max)
+        ? e.target.max
+        : e.target.value;
+    console.log(value);
+
+    setDuplicate(value);
+    const num = value == "" ? 1 : parseInt(value);
+
+    let newSelected = dataSelected.flatMap((e) =>
+      Array(num).fill({
+        harga: e.harga,
+        id: e.id,
+        kode: e.kode,
+        nama: e.nama,
+        nama_varian: e.nama_varian,
+        stok: e.stok,
+        stok_minimum: e.stok_minimum,
+        track_stok: e.track_stok,
+      })
+    );
+
+    setDataSelectedFilter(newSelected);
   };
 
   useEffect(() => {
@@ -304,20 +333,22 @@ function CetakBarcode() {
                     <span className="fw-bold">Ukuran Kertas :</span>
                     <div>A4</div>
                     <span className="fw-bold">Barcode per item :</span>
-                    <div>
+                    <div className="me-2">
                       <FormControl
-                        readOnly
                         type="number"
-                        value="1"
-                        onFocus={(e) =>
+                        max="50"
+                        value={duplicate}
+                        onChange={(e) => handleChangeDuplicate(e)}
+                        onFocus={(e) => {
+                          e.target.select();
                           e.target.addEventListener(
                             "wheel",
                             function (e) {
                               e.preventDefault();
                             },
                             { passive: false }
-                          )
-                        }
+                          );
+                        }}
                       />
                     </div>
                   </div>
@@ -380,7 +411,9 @@ function CetakBarcode() {
                       onClick={() => {
                         setStep2(false);
                         setDataSelected([]);
+                        setDataSelectedFilter([]);
                         setTotalSelected(0);
+                        setDuplicate(1);
                       }}
                       size="sm"
                     >
@@ -405,7 +438,7 @@ function CetakBarcode() {
                 >
                   <ComponentToPrintBarcode
                     ref={componentRef}
-                    dataPrint={dataSelected}
+                    dataPrint={dataSelectedFilter}
                   />
                 </div>
               </Col>

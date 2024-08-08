@@ -1,7 +1,11 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useMemo, useState } from "react";
 import Barcode from "react-barcode";
 
 const ComponentToPrintBarcode = forwardRef(function MyInput(props, ref) {
+  const [data, setdata] = useState([]);
+  const visibleData = useMemo(() => {
+    setdata(props.dataPrint);
+  }, [props.dataPrint]);
   return (
     <>
       <div
