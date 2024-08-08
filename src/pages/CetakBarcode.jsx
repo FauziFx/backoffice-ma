@@ -171,8 +171,9 @@ function CetakBarcode() {
     const value =
       parseInt(e.target.value) > parseInt(e.target.max)
         ? e.target.max
+        : parseInt(e.target.value) < parseInt(e.target.min)
+        ? e.target.min
         : e.target.value;
-    console.log(value);
 
     setDuplicate(value);
     const num = value == "" ? 1 : parseInt(value);
@@ -337,6 +338,7 @@ function CetakBarcode() {
                       <FormControl
                         type="number"
                         max="50"
+                        min="1"
                         value={duplicate}
                         onChange={(e) => handleChangeDuplicate(e)}
                         onFocus={(e) => {
