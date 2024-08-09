@@ -178,8 +178,8 @@ function CetakBarcode() {
     setDuplicate(value);
     const num = value == "" ? 1 : parseInt(value);
 
-    let newSelected = dataSelected.flatMap((e) =>
-      Array(num).fill({
+    let newSelected = dataSelected.flatMap((e) => {
+      return Array(num).fill({
         harga: e.harga,
         id: e.id,
         kode: e.kode,
@@ -188,8 +188,8 @@ function CetakBarcode() {
         stok: e.stok,
         stok_minimum: e.stok_minimum,
         track_stok: e.track_stok,
-      })
-    );
+      });
+    });
 
     setDataSelectedFilter(newSelected);
   };
